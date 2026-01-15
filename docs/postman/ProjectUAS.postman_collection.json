@@ -1,0 +1,337 @@
+{
+  "info": {
+    "name": "Project UAS Portfolio (Laravel + Cloudinary)",
+    "_postman_id": "b6f7dc2a-5c9e-41c6-b1f2-8e02b0c5e3f1",
+    "description": "Collection untuk test admin auth, project CRUD dengan upload gambar ke Cloudinary, dan direct Cloudinary API upload.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Get CSRF Token (Run First!)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Multiple methods to extract CSRF token",
+              "const responseBody = pm.response.text();",
+              "let token = null;",
+              "",
+              "// Method 1: Extract dari form input _token",
+              "let match = responseBody.match(/name=\\\"_token\\\"[^>]*value=\\\"([^\\\"]+)\\\"/);",
+              "if (match && match[1]) {",
+              "  token = match[1];",
+              "  console.log('✓ Token extracted from form input');",
+              "}",
+              "",
+              "// Method 2: Extract dari data-* attribute (jika ada)",
+              "if (!token) {",
+              "  match = responseBody.match(/data-csrf=\\\"([^\\\"]+)\\\"/);",
+              "  if (match && match[1]) {",
+              "    token = match[1];",
+              "    console.log('✓ Token extracted from data attribute');",
+              "  }",
+              "}",
+              "",
+              "// Method 3: Extract dari meta tag",
+              "if (!token) {",
+              "  match = responseBody.match(/<meta[^>]*name=\\\"csrf-token\\\"[^>]*content=\\\"([^\\\"]+)\\\"/);",
+              "  if (match && match[1]) {",
+              "    token = match[1];",
+              "    console.log('✓ Token extracted from meta tag');",
+              "  }",
+              "}",
+              "",
+              "if (token) {",
+              "  pm.environment.set('csrf_token', token);",
+              "  console.log('CSRF Token saved: ' + token.substring(0, 20) + '...');",
+              "} else {",
+              "  console.error('❌ CSRF token NOT found in response!');",
+              "  console.log('Response length: ' + responseBody.length);",
+              "  console.log('First 500 chars: ' + responseBody.substring(0, 500));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/console/access",
+          "host": ["{{baseUrl}}"],
+          "path": ["console","access"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "1. Login (Admin)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Get CSRF token from environment",
+              "const csrfToken = pm.environment.get('csrf_token');",
+              "",
+              "if (!csrfToken) {",
+              "  console.warn('❌ CSRF token is EMPTY!');",
+              "  console.warn('FIX: Run \"Get CSRF Token\" request first, then come back to Login');",
+              "} else {",
+              "  console.log('✓ CSRF Token found: ' + csrfToken.substring(0, 30) + '...');",
+              "  // Verify token length (should be ~40+ chars)",
+              "  if (csrfToken.length < 30) {",
+              "    console.warn('⚠️  Token too short, might be invalid');",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" },
+          { "key": "X-CSRF-TOKEN", "value": "{{csrf_token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/console/access",
+          "host": ["{{baseUrl}}"],
+          "path": ["console","access"]
+        },
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "_token", "value": "{{csrf_token}}" },
+            { "key": "email", "value": "{{adminEmail}}" },
+            { "key": "password", "value": "{{adminPassword}}" },
+            { "key": "remember", "value": "1" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. Create Project (via Laravel + Cloudinary)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Fetch fresh CSRF token from /console page AFTER login",
+              "const getTokenRequest = {",
+              "  url: pm.environment.get('baseUrl') + '/console',",
+              "  method: 'GET'",
+              "};",
+              "",
+              "pm.sendRequest(getTokenRequest, function(err, response) {",
+              "  if (err) {",
+              "    console.error('❌ Failed to fetch /console:', err);",
+              "    return;",
+              "  }",
+              "  ",
+              "  const responseBody = response.text();",
+              "  let token = null;",
+              "  ",
+              "  // Extract token from form input _token",
+              "  let match = responseBody.match(/name=\\\"_token\\\"[^>]*value=\\\"([^\\\"]+)\\\"/);",
+              "  if (match && match[1]) {",
+              "    token = match[1];",
+              "    console.log('✓ Fresh CSRF token extracted from /console');",
+              "  }",
+              "  ",
+              "  if (token) {",
+              "    pm.environment.set('csrf_token', token);",
+              "    console.log('✓ Fresh CSRF Token saved: ' + token.substring(0, 25) + '...');",
+              "  } else {",
+              "    console.error('❌ Could not extract token from /console');",
+              "    console.log('Response length: ' + responseBody.length);",
+              "  }",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Extract projectId from response if available",
+              "try {",
+              "  const redirectUrl = pm.response.headers.get('location');",
+              "  if (redirectUrl && redirectUrl.includes('/project/')) {",
+              "    const slug = redirectUrl.split('/project/')[1];",
+              "    pm.environment.set('projectSlug', slug);",
+              "  }",
+              "} catch(e) { }",
+              "",
+              "// Or manually set projectId in environment after response"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-CSRF-TOKEN", "value": "{{csrf_token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/console/projects",
+          "host": ["{{baseUrl}}"],
+          "path": ["console","projects"]
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "_token", "value": "{{csrf_token}}", "type": "text" },
+            { "key": "title", "value": "Website Portfolio Modern", "type": "text" },
+            { "key": "summary", "value": "Portfolio website dengan design modern dan responsive.", "type": "text" },
+            { "key": "description", "value": "Website portfolio yang menampilkan semua project dengan design clean, animasi smooth, dan loading cepat. Dibangun dengan Laravel 12 dan Tailwind CSS.", "type": "text" },
+            { "key": "tech_stack", "value": "Laravel 12, Tailwind CSS v4, MySQL, Cloudinary", "type": "text" },
+            { "key": "live_url", "value": "https://portfolio.example.com", "type": "text" },
+            { "key": "repo_url", "value": "https://github.com/andi/portfolio", "type": "text" },
+            { "key": "is_published", "value": "on", "type": "text" },
+            { "key": "cover_image", "type": "file", "disabled": false }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. Update Project (via Laravel + Cloudinary)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/console/projects/{{projectId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["console","projects","{{projectId}}"]
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "_method", "value": "PUT", "type": "text" },
+            { "key": "title", "value": "Website Portfolio Modern (Updated)", "type": "text" },
+            { "key": "summary", "value": "Portfolio website dengan design modern, responsive, dan performa optimal.", "type": "text" },
+            { "key": "description", "value": "Update: Ditambahkan fitur dark mode, analytics real-time, dan admin panel yang lebih intuitif.", "type": "text" },
+            { "key": "tech_stack", "value": "Laravel 12, Tailwind CSS v4, MySQL, Cloudinary, Vue.js", "type": "text" },
+            { "key": "is_published", "value": "on", "type": "text" },
+            { "key": "cover_image", "type": "file", "disabled": true }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Get All Projects",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/projects",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","projects"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Delete Project",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/console/projects/{{projectId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["console","projects","{{projectId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. Direct Upload to Cloudinary (Signed)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Auto-generate timestamp and signature untuk signed upload",
+              "const crypto = require('crypto');",
+              "const timestamp = Math.floor(Date.now() / 1000);",
+              "const apiSecret = pm.environment.get('cloudinaryApiSecret');",
+              "const folder = 'portfolio/projects/test-direct';",
+              "",
+              "// Build string to sign",
+              "const stringToSign = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;",
+              "const signature = crypto.createHash('sha1').update(stringToSign).digest('hex');",
+              "",
+              "pm.environment.set('timestamp', timestamp);",
+              "pm.environment.set('signature', signature);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "https://api.cloudinary.com/v1_1/{{cloudinaryCloudName}}/image/upload",
+          "protocol": "https",
+          "host": ["api","cloudinary","com"],
+          "path": ["v1_1","{{cloudinaryCloudName}}","image","upload"]
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "disabled": false },
+            { "key": "api_key", "value": "{{cloudinaryApiKey}}", "type": "text" },
+            { "key": "timestamp", "value": "{{timestamp}}", "type": "text" },
+            { "key": "signature", "value": "{{signature}}", "type": "text" },
+            { "key": "folder", "value": "portfolio/projects/test-direct", "type": "text" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "7. Logout (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/console/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["console","logout"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": { "type": "text/javascript", "exec": ["// Ensure Cookie Jar enabled in Postman settings for session persistence."] }
+    },
+    {
+      "listen": "test",
+      "script": { "type": "text/javascript", "exec": ["// Check response status and headers."] }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "adminEmail", "value": "admin@portfolio.test" },
+    { "key": "adminPassword", "value": "admin12345" },
+    { "key": "projectId", "value": "1" },
+    { "key": "projectSlug", "value": "website-portfolio" },
+    { "key": "cloudinaryCloudName", "value": "dducuhzso" },
+    { "key": "cloudinaryApiKey", "value": "381236954385957" },
+    { "key": "cloudinaryApiSecret", "value": "LCPFjOjbNw_mKUeIfY5uNY8b_8Q" }
+  ]
+}
