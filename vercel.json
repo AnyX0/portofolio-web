@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm run build",
+  "public": "public",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://your-app.cleverapps.io/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "https://your-app.cleverapps.io/$1"
+    }
+  ]
+}
