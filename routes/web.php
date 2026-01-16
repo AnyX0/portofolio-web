@@ -13,6 +13,9 @@ Route::get('/projects', [PortfolioController::class, 'index'])->name('projects')
 Route::get('/project/{slug}', [PortfolioController::class, 'show'])->name('project.show');
 Route::get('/about', [PortfolioController::class, 'about'])->name('about');
 
+// API Routes
+Route::get('/api/projects/{id}', [PortfolioController::class, 'getProjectData']);
+
 Route::prefix('console')->name('admin.')->group(function () {
     Route::get('/access', [AuthController::class, 'create'])->name('login');
     Route::post('/access', [AuthController::class, 'store'])->name('login.store');

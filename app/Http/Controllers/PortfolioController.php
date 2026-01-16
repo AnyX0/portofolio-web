@@ -103,4 +103,25 @@ class PortfolioController extends Controller
 
         return view('about', compact('contact', 'timeline', 'skills'));
     }
+
+    public function getProjectData($id)
+    {
+        $project = Project::find($id);
+
+        if (!$project || !$project->is_published) {
+            return response()->json(['error' => 'Project tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'id' => $project->id,
+            'title' => $project->title,
+            'summary' => $project->summary,
+            'description' => $project->description,
+            'tech_stack' => $project->tech_stack,
+            'client' => $project->client,
+            'project_type' => $project->project_type,
+            'link' => $project->link,
+            'is_published' => $project->is_published,
+        ]);
+    }
 }
