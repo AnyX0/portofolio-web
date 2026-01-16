@@ -107,12 +107,12 @@
                                 </a>
                                 
                                 <!-- Archive -->
-                                <button type="button" onclick="archiveProject('{{ $project->id }}')" title="Arsipkan" class="inline-flex items-center justify-center w-8 h-8 rounded text-blue-400 hover:bg-blue-500/20 transition">
+                                <button type="button" onclick="AdminProjects.archiveProject('{{ $project->id }}')" title="Arsipkan" class="inline-flex items-center justify-center w-8 h-8 rounded text-blue-400 hover:bg-blue-500/20 transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
                                 </button>
                                 
                                 <!-- Share -->
-                                <button type="button" onclick="shareProject('{{ $project->id }}', '{{ $project->title }}')" title="Bagikan" class="inline-flex items-center justify-center w-8 h-8 rounded text-indigo-400 hover:bg-indigo-500/20 transition">
+                                <button type="button" onclick="AdminProjects.shareProject('{{ $project->id }}')" title="Bagikan" class="inline-flex items-center justify-center w-8 h-8 rounded text-indigo-400 hover:bg-indigo-500/20 transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C9.589 12.938 10 12.502 10 12c0-.502-.411-.938-1.316-1.342m0 2.684a3 3 0 110-2.684m9.032-6.348a3 3 0 110 4.243m0-4.243L9.758 19.242a3 3 0 11-4.243-4.243l12.159-12.159z"/></svg>
                                 </button>
                                 
@@ -120,7 +120,7 @@
                                 <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" class="inline deleteForm-{{ $project->id }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" title="Hapus" onclick="deleteProject('{{ $project->id }}', document.querySelector('.deleteForm-{{ $project->id }}'))" class="inline-flex items-center justify-center w-8 h-8 rounded text-rose-400 hover:bg-rose-500/20 transition">
+                                    <button type="button" title="Hapus" onclick="AdminProjects.deleteProject('{{ $project->id }}', document.querySelector('.deleteForm-{{ $project->id }}'))" class="inline-flex items-center justify-center w-8 h-8 rounded text-rose-400 hover:bg-rose-500/20 transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </button>
                                 </form>
@@ -156,8 +156,8 @@
             <h3 class="text-lg font-semibold text-white mb-2">Arsipkan Project</h3>
             <p class="text-slate-300 mb-6">Apakah Anda yakin ingin mengarsipkan project ini? Data akan tetap tersimpan.</p>
             <div class="flex gap-3">
-                <button onclick="closeModal('archiveModal')" class="flex-1 px-4 py-2 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 transition">Batal</button>
-                <button onclick="confirmArchive()" class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">Arsipkan</button>
+                <button onclick="AdminProjects.closeModal('archiveModal')" class="flex-1 px-4 py-2 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 transition">Batal</button>
+                <button onclick="AdminProjects.confirmArchive()" class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">Arsipkan</button>
             </div>
         </div>
     </div>
@@ -167,10 +167,10 @@
         <div class="bg-slate-800 rounded-2xl border border-white/10 max-w-sm w-full p-6 animate-in fade-in">
             <h3 class="text-lg font-semibold text-white mb-2">Bagikan Project</h3>
             <p class="text-slate-300 mb-4">Salin link project ini untuk dibagikan:</p>
-            <input type="text" id="shareUrl" readonly class="w-full px-3 py-2 rounded-lg bg-slate-700 text-slate-200 border border-white/10 text-sm mb-4">
+            <input type="text" id="shareUrl" data-share-base="{{ url('/project') }}" readonly class="w-full px-3 py-2 rounded-lg bg-slate-700 text-slate-200 border border-white/10 text-sm mb-4">
             <div class="flex gap-3">
-                <button onclick="closeModal('shareModal')" class="flex-1 px-4 py-2 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 transition">Tutup</button>
-                <button onclick="copyShareLink()" class="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">Salin</button>
+                <button onclick="AdminProjects.closeModal('shareModal')" class="flex-1 px-4 py-2 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 transition">Tutup</button>
+                <button onclick="AdminProjects.copyShareLink()" class="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">Salin</button>
             </div>
         </div>
     </div>
@@ -189,106 +189,4 @@
         </div>
     </div>
 
-    <script>
-        let currentProjectId = null;
-        let currentDeleteForm = null;
-
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        // Close modal when clicking outside
-        document.querySelectorAll('[id$="Modal"]').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
-                    this.classList.remove('flex');
-                }
-            });
-        });
-
-        // Archive
-        function archiveProject(projectId) {
-            currentProjectId = projectId;
-            openModal('archiveModal');
-        }
-
-        function confirmArchive() {
-            if (!currentProjectId) return;
-            
-            // Create form and submit
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/console/projects/${currentProjectId}/archive`;
-            
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-            
-            document.body.appendChild(form);
-            form.submit();
-        }
-
-        // Share
-        function shareProject(projectId, projectTitle) {
-            currentProjectId = projectId;
-            const projectUrl = `{{ url('/project') }}/${projectId}`;
-            document.getElementById('shareUrl').value = projectUrl;
-            openModal('shareModal');
-        }
-
-        function copyShareLink() {
-            const shareUrl = document.getElementById('shareUrl');
-            shareUrl.select();
-            document.execCommand('copy');
-            alert('Link tersalin ke clipboard!');
-            closeModal('shareModal');
-        }
-
-        // Delete
-        function deleteProject(projectId, deleteForm) {
-            currentProjectId = projectId;
-            currentDeleteForm = deleteForm;
-            document.getElementById('deleteConfirmInput').value = '';
-            document.getElementById('deleteConfirmBtn').disabled = true;
-            document.getElementById('deleteConfirmBtn').classList.add('opacity-50', 'cursor-not-allowed');
-            openModal('deleteModal');
-        }
-
-        function toggleDeleteButton() {
-            const input = document.getElementById('deleteConfirmInput');
-            const btn = document.getElementById('deleteConfirmBtn');
-            const isValid = input.value.toLowerCase() === 'hapus';
-            
-            btn.disabled = !isValid;
-            if (isValid) {
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.classList.add('hover:bg-rose-700', 'cursor-pointer');
-            } else {
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                btn.classList.remove('hover:bg-rose-700', 'cursor-pointer');
-            }
-        }
-
-        function confirmDelete() {
-            const input = document.getElementById('deleteConfirmInput');
-            if (input.value.toLowerCase() === 'hapus' && currentDeleteForm) {
-                currentDeleteForm.submit();
-            }
-        }
-    </script>
 </x-layouts.app>

@@ -1,4 +1,5 @@
 import './bootstrap';
+import './admin/projects';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const copyButtons = document.querySelectorAll('.copy-btn');
