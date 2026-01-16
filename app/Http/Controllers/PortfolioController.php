@@ -118,9 +118,8 @@ class PortfolioController extends Controller
             'summary' => $project->summary,
             'description' => $project->description,
             'tech_stack' => $project->tech_stack,
-            'client' => $project->client,
-            'project_type' => $project->project_type,
-            'link' => $project->link,
+                'live_url' => $project->live_url,
+                'repo_url' => $project->repo_url,
             'is_published' => $project->is_published,
         ]);
     }

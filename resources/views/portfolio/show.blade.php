@@ -336,20 +336,6 @@
                     `;
                 }
 
-                if (data.client) {
-                    detailsHTML += `
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-xs text-slate-400 mb-1">Client</p>
-                                <p class="text-slate-200 font-medium">${data.client}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-slate-400 mb-1">Tipe Project</p>
-                                <p class="text-slate-200 font-medium">${data.project_type || 'N/A'}</p>
-                            </div>
-                        </div>
-                    `;
-                }
 
                 detailsEl.innerHTML = detailsHTML || '<p class="text-slate-400">Data lengkap tidak tersedia</p>';
             } catch (error) {
