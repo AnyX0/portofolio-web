@@ -35,7 +35,7 @@
                     @php
                         $projectImages = $allProjectImages[$project->id] ?? [];
                     @endphp
-                    <div class="group relative rounded-3xl border border-white/10 bg-white/5 overflow-hidden shadow-lg shadow-black/20 transition hover:-translate-y-1 hover:shadow-2xl hover:border-white/20 flex flex-col cursor-pointer" onclick="openProjectPreview({{ $project->id }}, '{{ addslashes($project->title) }}', '{{ addslashes($project->summary) }}', '{{ $project->link ?? '#' }}', '{{ $project->is_published }}')">
+                    <div class="group relative rounded-3xl border border-white/10 bg-white/5 overflow-hidden shadow-lg shadow-black/20 transition hover:-translate-y-1 hover:shadow-2xl hover:border-white/20 flex flex-col">
                         <!-- Hover Gradient Overlay -->
                         <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-indigo-500/10 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
                         
@@ -89,11 +89,21 @@
                                 </div>
                             @endif
                             
-                            <div class="flex items-center gap-2 text-sm text-cyan-400 mt-auto pt-2 transition-all duration-300 group-hover:gap-3">
-                                <span>Lihat detail</span>
-                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
+                            <!-- Action Buttons -->
+                            <div class="flex gap-2 mt-auto pt-4">
+                                <button onclick="openProjectPreview({{ $project->id }}, '{{ addslashes($project->title) }}', '{{ addslashes($project->summary) }}', '{{ $project->link ?? '#' }}', '{{ $project->is_published }}')" class="flex-1 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Open Live
+                                </button>
+                                <a href="{{ route('project.show', $project->slug) }}" class="flex-1 px-3 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-medium transition flex items-center justify-center gap-2">
+                                    Lihat detail
+                                    <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
                             </div>
                         </div>
                     </div>
