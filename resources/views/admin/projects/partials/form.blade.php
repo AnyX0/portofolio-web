@@ -239,11 +239,19 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'POST',
             headers: {
                 'X-CSRF-Token': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             },
             body: formData,
         });
-        
-        const data = await response.json();
+
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseErr) {
+            const text = await response.text();
+            throw new Error(`Upload failed (non-JSON response): ${response.status} ${text.substring(0, 120)}`);
+        }
         
         if (!data.success) {
             throw new Error(data.error || 'Upload failed');
