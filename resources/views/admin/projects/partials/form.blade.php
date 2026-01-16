@@ -14,7 +14,6 @@
 <div class="space-y-2">
     <label class="text-sm text-slate-300">Judul <span class="text-cyan-400">*</span></label>
     <input name="title" type="text" value="{{ old('title', optional($current)->title) }}" class="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none" required>
-    <p id="folderPreview" class="text-xs text-cyan-300 mt-1">📁 Folder Cloudinary akan otomatis dibuat berdasarkan judul ini</p>
     @error('title')<p class="text-rose-200 text-xs">{{ $message }}</p>@enderror
 </div>
 
@@ -113,37 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadTitle = document.getElementById('uploadTitle');
     
     let filesArray = [];
-    
-    // Real-time folder preview
-    function updateFolderPreview() {
-        const titleInput = document.querySelector('input[name="title"]');
-        const folderPreview = document.getElementById('folderPreview');
-        
-        if (!titleInput || !folderPreview) return;
-        
-        const title = titleInput.value.trim();
-        if (!title) {
-            folderPreview.textContent = '📁 Folder Cloudinary akan otomatis dibuat berdasarkan judul ini';
-            folderPreview.className = 'text-xs text-cyan-300 mt-1';
-            return;
-        }
-        
-        const slug = title.toLowerCase()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-+|-+$/g, '');
-        
-        const folderName = 'portfolio/projects/' + slug;
-        folderPreview.textContent = '📁 Folder: ' + folderName;
-        folderPreview.className = 'text-xs text-emerald-300 mt-1 font-semibold';
-    }
-    
-    const titleInput = document.querySelector('input[name="title"]');
-    if (titleInput) {
-        titleInput.addEventListener('input', updateFolderPreview);
-        updateFolderPreview(); // Initial preview
-    }
     
     if (input) {
         input.addEventListener('change', function(e) {
