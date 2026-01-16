@@ -36,6 +36,14 @@
       "dest": "/public/favicon.ico"
     },
     {
+      "src": "/cursor.png",
+      "dest": "/public/cursor.png"
+    },
+    {
+      "src": "/hand-pointer.png",
+      "dest": "/public/hand-pointer.png"
+    },
+    {
       "src": "/(.*)",
       "dest": "/api/index.php"
     }
