@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProjectController;
@@ -32,5 +33,9 @@ Route::prefix('console')->name('admin.')->group(function () {
         Route::post('/projects/{project}/unarchive', [ProjectController::class, 'unarchive'])->name('projects.unarchive');
         Route::post('/projects/{project}/delete-image', [ProjectController::class, 'deleteImage'])->name('projects.deleteImage');
         Route::post('/upload-image', [UploadController::class, 'uploadImage'])->name('uploadImage');
+        
+        // About routes
+        Route::get('/about/edit', [AboutController::class, 'edit'])->name('about.edit');
+        Route::put('/about', [AboutController::class, 'update'])->name('about.update');
     });
 });

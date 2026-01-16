@@ -59,7 +59,7 @@
     <!-- Quick Actions -->
     <div class="mb-8">
         <h2 class="text-lg font-semibold text-white mb-4">Quick Actions</h2>
-        <div class="grid md:grid-cols-2 gap-4">
+        <div class="grid md:grid-cols-3 gap-4">
             <a href="{{ route('admin.projects.index') }}" class="p-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-cyan-400/40 transition group">
                 <div class="flex items-center gap-4">
                     <svg class="w-12 h-12 text-cyan-400 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
@@ -76,6 +76,16 @@
                     <div>
                         <h3 class="font-semibold text-white">Project Baru</h3>
                         <p class="text-sm text-slate-400">Buat project portfolio baru</p>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 ml-auto group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </div>
+            </a>
+            <a href="{{ route('admin.about.edit') }}" class="p-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-400/40 transition group">
+                <div class="flex items-center gap-4">
+                    <svg class="w-12 h-12 text-purple-400 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <div>
+                        <h3 class="font-semibold text-white">Kelola About</h3>
+                        <p class="text-sm text-slate-400">Edit informasi pribadi</p>
                     </div>
                     <svg class="w-5 h-5 text-slate-400 ml-auto group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </div>

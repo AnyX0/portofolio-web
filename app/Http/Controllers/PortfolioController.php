@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\About;
 use App\Models\Project;
 use App\Services\CloudinaryImageFetcher;
 
@@ -64,27 +65,41 @@ class PortfolioController extends Controller
 
     public function about()
     {
+        // Get about data from database or create with defaults
+        $about = About::first();
+        
+        if (!$about) {
+            $about = About::create([
+                'email' => 'moxer404@aol.com',
+                'phone' => '+62 822 6989 8199',
+                'location' => 'Padang, Indonesia',
+                'availability' => 'Available for freelance & collaboration',
+                'timeline' => [
+                    [
+                        'year' => '2023',
+                        'title' => 'Fullstack Developer',
+                        'desc' => 'Bangun SaaS multi-tenant dengan Laravel + Flutter front layer.',
+                    ],
+                    [
+                        'year' => '2021',
+                        'title' => 'Intern - Product Engineering',
+                        'desc' => 'Eksplorasi arsitektur bersih dan otomasi testing.',
+                    ],
+                ],
+                'skills' => ['Flutter', 'Laravel', 'Tailwind', 'Clean Architecture', 'CI/CD', 'TypeScript'],
+                'bio' => null,
+            ]);
+        }
+
         $contact = [
-            'email' => 'moxer404@aol.com',
-            'phone' => '+62 822 6989 8199',
-            'location' => 'Padang, Indonesia',
-            'availability' => 'Available for freelance & collaboration',
+            'email' => $about->email,
+            'phone' => $about->phone,
+            'location' => $about->location,
+            'availability' => $about->availability,
         ];
 
-        $timeline = [
-            [
-                'year' => '2023',
-                'title' => 'Fullstack Developer',
-                'desc' => 'Bangun SaaS multi-tenant dengan Laravel + Flutter front layer.',
-            ],
-            [
-                'year' => '2021',
-                'title' => 'Intern - Product Engineering',
-                'desc' => 'Eksplorasi arsitektur bersih dan otomasi testing.',
-            ],
-        ];
-
-        $skills = ['Flutter', 'Laravel', 'Tailwind', 'Clean Architecture', 'CI/CD', 'TypeScript'];
+        $timeline = $about->timeline;
+        $skills = $about->skills;
 
         return view('about', compact('contact', 'timeline', 'skills'));
     }
