@@ -89,21 +89,11 @@
                                 </div>
                             @endif
                             
-                            <!-- Action Buttons -->
-                            <div class="flex gap-2 mt-auto pt-4">
-                                <button onclick="openProjectPreview({{ $project->id }}, '{{ addslashes($project->title) }}', '{{ addslashes($project->summary) }}', '{{ $project->link ?? '#' }}', '{{ $project->is_published }}')" class="flex-1 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                    Open Live
-                                </button>
-                                <a href="{{ route('project.show', $project->slug) }}" class="flex-1 px-3 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-medium transition flex items-center justify-center gap-2">
-                                    Lihat detail
-                                    <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                    </svg>
-                                </a>
+                            <div class="flex items-center gap-2 text-sm text-cyan-400 mt-auto pt-2 transition-all duration-300 group-hover:gap-3">
+                                <a href="{{ route('project.show', $project->slug) }}" class="flex-1">Lihat detail</a>
+                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -115,149 +105,7 @@
     <!-- Swiper JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-    <!-- Project Preview Modal -->
-    <div id="previewModal" class="fixed inset-0 z-50 hidden">
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeProjectPreview()"></div>
-        
-        <!-- Modal Content -->
-        <div class="absolute inset-0 flex items-center justify-center p-4 overflow-y-auto">
-            <div class="relative bg-gradient-to-br from-slate-900/95 to-slate-950/95 border border-white/10 rounded-3xl shadow-2xl shadow-black/50 max-w-2xl w-full my-8" onclick="event.stopPropagation()">
-                <!-- Close Button -->
-                <button onclick="closeProjectPreview()" class="absolute top-4 right-4 z-10 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-
-                <!-- Modal Body -->
-                <div class="p-8 space-y-6">
-                    <!-- Title -->
-                    <div>
-                        <h2 id="previewTitle" class="text-3xl font-bold text-white mb-2"></h2>
-                        <p id="previewStatus" class="inline-block px-3 py-1 rounded-full text-xs font-medium border"></p>
-                    </div>
-
-                    <!-- Description -->
-                    <div>
-                        <h3 class="text-sm font-semibold text-slate-300 mb-2">Deskripsi</h3>
-                        <p id="previewSummary" class="text-slate-300 leading-relaxed"></p>
-                    </div>
-
-                    <!-- Project Details Loading -->
-                    <div id="previewDetails" class="space-y-4">
-                        <div class="animate-pulse space-y-4">
-                            <div class="h-4 bg-white/10 rounded w-3/4"></div>
-                            <div class="h-4 bg-white/10 rounded w-1/2"></div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex gap-3 pt-4 border-t border-white/10">
-                        <a id="previewLink" href="#" target="_blank" class="flex-1 px-4 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-center transition">
-                            Kunjungi Project
-                        </a>
-                        <button onclick="closeProjectPreview()" class="flex-1 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition">
-                            Tutup
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        async function openProjectPreview(projectId, title, summary, link, isPublished) {
-            const modal = document.getElementById('previewModal');
-            const titleEl = document.getElementById('previewTitle');
-            const statusEl = document.getElementById('previewStatus');
-            const summaryEl = document.getElementById('previewSummary');
-            const detailsEl = document.getElementById('previewDetails');
-            const linkEl = document.getElementById('previewLink');
-
-            // Set basic info
-            titleEl.textContent = title;
-            summaryEl.textContent = summary;
-            linkEl.href = link || '#';
-            
-            // Set status badge
-            if (isPublished === '1' || isPublished === true) {
-                statusEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-medium border border-emerald-400/40 text-emerald-200 bg-emerald-400/10';
-                statusEl.textContent = 'Published';
-            } else {
-                statusEl.className = 'inline-block px-3 py-1 rounded-full text-xs font-medium border border-amber-400/40 text-amber-200 bg-amber-400/10';
-                statusEl.textContent = 'Draft';
-            }
-
-            // Fetch detailed project info
-            try {
-                const response = await fetch(`/api/projects/${projectId}`);
-                if (!response.ok) throw new Error('Failed to fetch');
-                
-                const data = await response.json();
-                
-                // Build details HTML
-                let detailsHTML = '';
-
-                if (data.tech_stack) {
-                    const techs = data.tech_stack.split(',').map(t => `<span class="px-2 py-1 rounded-full bg-white/5 border border-white/10 text-slate-200 text-xs">${t.trim()}</span>`).join('');
-                    detailsHTML += `
-                        <div>
-                            <h3 class="text-sm font-semibold text-slate-300 mb-2">Tech Stack</h3>
-                            <div class="flex flex-wrap gap-2">${techs}</div>
-                        </div>
-                    `;
-                }
-
-                if (data.description) {
-                    detailsHTML += `
-                        <div>
-                            <h3 class="text-sm font-semibold text-slate-300 mb-2">Detail Lengkap</h3>
-                            <p class="text-slate-300 text-sm leading-relaxed">${data.description}</p>
-                        </div>
-                    `;
-                }
-
-                if (data.client) {
-                    detailsHTML += `
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-xs text-slate-400 mb-1">Client</p>
-                                <p class="text-slate-200 font-medium">${data.client}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-slate-400 mb-1">Tipe Project</p>
-                                <p class="text-slate-200 font-medium">${data.project_type || 'N/A'}</p>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                detailsEl.innerHTML = detailsHTML || '<p class="text-slate-400">Data lengkap tidak tersedia</p>';
-            } catch (error) {
-                console.error('Error fetching project:', error);
-                detailsEl.innerHTML = '<p class="text-red-400">Gagal memuat detail project</p>';
-            }
-
-            // Show modal
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeProjectPreview() {
-            const modal = document.getElementById('previewModal');
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeProjectPreview();
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
             @foreach($projects as $project)
                 @php
