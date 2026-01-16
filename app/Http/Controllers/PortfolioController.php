@@ -143,3 +143,4 @@ class PortfolioController extends Controller
             'is_published' => $project->is_published,
         ]);
     }
+}
