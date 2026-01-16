@@ -9,6 +9,14 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') . '?v=' . time() }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700" rel="stylesheet" />
+    <style>
+        * {
+            cursor: url('{{ asset('cursor.png') }}') 12 0, auto;
+        }
+        a, button, [role="button"], .cursor-pointer, [onclick] {
+            cursor: url('{{ asset('hand-pointer.png') }}') 12 0, pointer;
+        }
+    </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-50 antialiased">
