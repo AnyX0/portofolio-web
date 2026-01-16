@@ -91,7 +91,7 @@
 
             <div class="rounded-3xl border border-white/10 bg-white/5 p-6 flex flex-col gap-3 text-sm text-slate-200">
                 @if($project->live_url)
-                    <button onclick="openProjectPreview({{ $project->id }}, '{{ addslashes($project->title) }}', '{{ addslashes($project->summary) }}', '{{ $project->live_url ?? '#' }}', '{{ $project->is_published }}')" class="inline-flex items-center justify-between px-4 py-3 rounded-2xl bg-emerald-400/10 border border-emerald-400/30 text-emerald-100 hover:bg-emerald-400/15 transition cursor-pointer">
+                    <button onclick="openProjectPreview('{{ $project->slug }}', '{{ addslashes($project->title) }}', '{{ addslashes($project->summary) }}', '{{ $project->live_url ?? '#' }}', '{{ $project->is_published }}')" class="inline-flex items-center justify-between px-4 py-3 rounded-2xl bg-emerald-400/10 border border-emerald-400/30 text-emerald-100 hover:bg-emerald-400/15 transition cursor-pointer">
                         <span>Open Live</span>
                         <span>↗</span>
                     </button>
@@ -285,7 +285,7 @@
     </div>
 
     <script>
-        async function openProjectPreview(projectId, title, summary, link, isPublished) {
+        async function openProjectPreview(projectSlug, title, summary, link, isPublished) {
             const modal = document.getElementById('previewModal');
             const titleEl = document.getElementById('previewTitle');
             const statusEl = document.getElementById('previewStatus');
@@ -307,9 +307,9 @@
                 statusEl.textContent = 'Draft';
             }
 
-            // Fetch detailed project info
+            // Fetch detailed project info by slug
             try {
-                const response = await fetch(`/api/projects/${projectId}`);
+                const response = await fetch(`/api/projects/slug/${projectSlug}`);
                 if (!response.ok) throw new Error('Failed to fetch');
                 
                 const data = await response.json();

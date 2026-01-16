@@ -123,4 +123,23 @@ class PortfolioController extends Controller
             'is_published' => $project->is_published,
         ]);
     }
-}
+
+    public function getProjectDataBySlug($slug)
+    {
+        $project = Project::where('slug', $slug)->where('is_published', true)->first();
+
+        if (!$project) {
+            return response()->json(['error' => 'Project tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'id' => $project->id,
+            'title' => $project->title,
+            'summary' => $project->summary,
+            'description' => $project->description,
+            'tech_stack' => $project->tech_stack,
+            'live_url' => $project->live_url,
+            'repo_url' => $project->repo_url,
+            'is_published' => $project->is_published,
+        ]);
+    }
