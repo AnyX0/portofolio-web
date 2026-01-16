@@ -24,6 +24,15 @@ class CloudinaryUploader
      */
     public function upload($file, ?string $folder = null): ?string
     {
+        $result = $this->uploadWithMetadata($file, $folder);
+        return $result['url'] ?? null;
+    }
+
+    /**
+     * Upload image and return both URL and public_id
+     */
+    public function uploadWithMetadata($file, ?string $folder = null): ?array
+    {
         try {
             if (!$this->uploadPreset) {
                 Log::error('Cloudinary upload preset not configured', [
@@ -89,7 +98,11 @@ class CloudinaryUploader
                     'url' => $result['secure_url'],
                     'public_id' => $result['public_id'] ?? null,
                 ]);
-                return $result['secure_url'];
+                
+                return [
+                    'url' => $result['secure_url'],
+                    'public_id' => $result['public_id'] ?? null,
+                ];
             }
 
             Log::error('Cloudinary upload failed - no URL in response', [
@@ -118,4 +131,4 @@ class CloudinaryUploader
             return null;
         }
     }
-}
+

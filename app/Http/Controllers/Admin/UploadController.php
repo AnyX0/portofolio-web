@@ -29,9 +29,9 @@ class UploadController extends Controller
             }
 
             $uploader = new CloudinaryUploader();
-            $url = $uploader->upload($file, $folder);
+            $result = $uploader->uploadWithMetadata($file, $folder);
 
-            if (!$url) {
+            if (!$result || !isset($result['url'])) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Gagal mengunggah ke Cloudinary'
@@ -40,7 +40,8 @@ class UploadController extends Controller
 
             return response()->json([
                 'success' => true,
-                'url' => $url,
+                'url' => $result['url'],
+                'public_id' => $result['public_id'] ?? null,
                 'message' => 'File berhasil diunggah'
             ]);
 

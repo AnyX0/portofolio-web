@@ -12,8 +12,9 @@
 </div>
 
 <div class="space-y-2">
-    <label class="text-sm text-slate-300">Judul</label>
+    <label class="text-sm text-slate-300">Judul <span class="text-cyan-400">*</span></label>
     <input name="title" type="text" value="{{ old('title', optional($current)->title) }}" class="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none" required>
+    <p id="folderPreview" class="text-xs text-cyan-300 mt-1">📁 Folder Cloudinary akan otomatis dibuat berdasarkan judul ini</p>
     @error('title')<p class="text-rose-200 text-xs">{{ $message }}</p>@enderror
 </div>
 
@@ -61,13 +62,12 @@
     <p class="text-xs text-slate-400">Gambar yang sudah di-upload:</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="existingImages">
         @foreach($images as $image)
-            @php($publicId = preg_match('/\/upload\/.*\/(.+?)\.[^.]+$/', $image, $matches) ? $matches[1] : null)
-            <div class="relative group" data-image-url="{{ $image }}" data-public-id="{{ $publicId }}">
+            <div class="relative group" data-image-url="{{ $image }}">
                 <img src="{{ $image }}" alt="Existing" class="w-full h-24 object-cover rounded-lg border border-white/10 group-hover:border-cyan-400 transition">
                 <button 
                     type="button"
                     class="deleteImageBtn absolute top-1 right-1 w-6 h-6 rounded-full bg-rose-500 text-white text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-600"
-                    data-public-id="{{ $publicId }}">
+                    data-image-url="{{ $image }}">
                     ×
                 </button>
                 <div class="deleteProgress absolute inset-0 rounded-lg bg-rose-500/20 opacity-0 flex items-center justify-center">
@@ -114,6 +114,37 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let filesArray = [];
     
+    // Real-time folder preview
+    function updateFolderPreview() {
+        const titleInput = document.querySelector('input[name="title"]');
+        const folderPreview = document.getElementById('folderPreview');
+        
+        if (!titleInput || !folderPreview) return;
+        
+        const title = titleInput.value.trim();
+        if (!title) {
+            folderPreview.textContent = '📁 Folder Cloudinary akan otomatis dibuat berdasarkan judul ini';
+            folderPreview.className = 'text-xs text-cyan-300 mt-1';
+            return;
+        }
+        
+        const slug = title.toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        
+        const folderName = 'portfolio/projects/' + slug;
+        folderPreview.textContent = '📁 Folder: ' + folderName;
+        folderPreview.className = 'text-xs text-emerald-300 mt-1 font-semibold';
+    }
+    
+    const titleInput = document.querySelector('input[name="title"]');
+    if (titleInput) {
+        titleInput.addEventListener('input', updateFolderPreview);
+        updateFolderPreview(); // Initial preview
+    }
+    
     if (input) {
         input.addEventListener('change', function(e) {
             const newFiles = Array.from(e.target.files);
@@ -140,7 +171,31 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadTitle.textContent = 'Mengunggah ' + filesArray.length + ' gambar...';
             
             try {
-                const cloudinaryFolder = '{{ $project->cloudinary_folder ?? "portfolio/projects/temp" }}';
+                // For create form (no project yet), we'll use the title's slug
+                // For edit form, use existing cloudinary_folder
+                let cloudinaryFolder = '{{ $project->cloudinary_folder ?? "" }}';
+                
+                if (!cloudinaryFolder) {
+                    const titleInput = document.querySelector('input[name="title"]');
+                    if (!titleInput || !titleInput.value.trim()) {
+                        throw new Error('⚠️ Harap isi judul project terlebih dahulu sebelum upload gambar');
+                    }
+                    
+                    // Extract slug from title for new projects (same as Laravel Str::slug)
+                    const title = titleInput.value.trim();
+                    const slug = title.toLowerCase()
+                        .replace(/[^\w\s-]/g, '')  // Remove special chars
+                        .replace(/\s+/g, '-')      // Replace spaces with dash
+                        .replace(/-+/g, '-')       // Replace multiple dashes with single
+                        .replace(/^-+|-+$/g, '');  // Remove leading/trailing dashes
+                    
+                    if (!slug) {
+                        throw new Error('⚠️ Judul project tidak valid untuk membuat folder');
+                    }
+                    
+                    cloudinaryFolder = 'portfolio/projects/' + slug;
+                    console.log('📁 Folder Cloudinary dibuat: ' + cloudinaryFolder);
+                }
                 
                 for (let i = 0; i < filesArray.length; i++) {
                     const file = filesArray[i];
@@ -255,12 +310,12 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             
-            const publicId = this.dataset.publicId;
+            const imageUrl = this.dataset.imageUrl;
             const container = this.closest('div[data-image-url]');
             const progress = container.querySelector('.deleteProgress');
             
-            if (!publicId) {
-                alert('Error: Public ID not found');
+            if (!imageUrl) {
+                alert('Error: Image URL not found');
                 return;
             }
             
@@ -277,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-CSRF-Token': '{{ csrf_token() }}',
                 },
                 body: JSON.stringify({
-                    public_id: publicId,
+                    image_url: imageUrl,
                 }),
             })
             .then(response => response.json())

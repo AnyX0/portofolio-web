@@ -106,10 +106,19 @@ class ProjectController extends Controller
     public function deleteImage(Request $request, Project $project)
     {
         try {
-            $publicId = $request->input('public_id');
+            $imageUrl = $request->input('image_url');
             
-            if (!$publicId) {
-                return response()->json(['error' => 'Missing public_id'], 400);
+            if (!$imageUrl) {
+                return response()->json(['error' => 'Missing image_url'], 400);
+            }
+            
+            // Extract public_id from Cloudinary URL
+            // URL format: https://res.cloudinary.com/{cloud_name}/image/upload/{version}/{folder}/{filename}
+            // We need to extract everything after /upload/ and remove the extension
+            if (preg_match('/\/upload\/(?:v\d+\/)?(.+?)\.[^.]+$/', $imageUrl, $matches)) {
+                $publicId = $matches[1];
+            } else {
+                return response()->json(['error' => 'Invalid Cloudinary URL format'], 400);
             }
             
             $deleter = new \App\Services\CloudinaryImageDeleter();
