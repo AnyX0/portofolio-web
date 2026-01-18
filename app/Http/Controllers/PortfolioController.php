@@ -65,43 +65,60 @@ class PortfolioController extends Controller
 
     public function about()
     {
-        // Get about data from database or create with defaults
-        $about = About::first();
-        
-        if (!$about) {
-            $about = About::create([
+        try {
+            // Get about data from database or create with defaults
+            $about = About::first();
+            
+            if (!$about) {
+                $about = About::create([
+                    'email' => 'moxer404@aol.com',
+                    'phone' => '+62 822 6989 8199',
+                    'location' => 'Padang, Indonesia',
+                    'availability' => 'Available for freelance & collaboration',
+                    'timeline' => json_encode([
+                        [
+                            'year' => '2023',
+                            'title' => 'Fullstack Developer',
+                            'desc' => 'Bangun SaaS multi-tenant dengan Laravel + Flutter front layer.',
+                        ],
+                        [
+                            'year' => '2021',
+                            'title' => 'Intern - Product Engineering',
+                            'desc' => 'Eksplorasi arsitektur bersih dan otomasi testing.',
+                        ],
+                    ]),
+                    'skills' => json_encode(['Flutter', 'Laravel', 'Tailwind', 'Clean Architecture', 'CI/CD', 'TypeScript']),
+                    'bio' => null,
+                ]);
+            }
+
+            $contact = [
+                'email' => $about->email,
+                'phone' => $about->phone,
+                'location' => $about->location,
+                'availability' => $about->availability,
+            ];
+
+            $timeline = is_array($about->timeline) ? $about->timeline : [];
+            $skills = is_array($about->skills) ? $about->skills : [];
+
+            return view('about', compact('contact', 'timeline', 'skills'));
+        } catch (\Exception $e) {
+            \Log::error('About page error: ' . $e->getMessage());
+            
+            // Fallback dengan data default jika error
+            $contact = [
                 'email' => 'moxer404@aol.com',
                 'phone' => '+62 822 6989 8199',
                 'location' => 'Padang, Indonesia',
                 'availability' => 'Available for freelance & collaboration',
-                'timeline' => [
-                    [
-                        'year' => '2023',
-                        'title' => 'Fullstack Developer',
-                        'desc' => 'Bangun SaaS multi-tenant dengan Laravel + Flutter front layer.',
-                    ],
-                    [
-                        'year' => '2021',
-                        'title' => 'Intern - Product Engineering',
-                        'desc' => 'Eksplorasi arsitektur bersih dan otomasi testing.',
-                    ],
-                ],
-                'skills' => ['Flutter', 'Laravel', 'Tailwind', 'Clean Architecture', 'CI/CD', 'TypeScript'],
-                'bio' => null,
-            ]);
+            ];
+            
+            $timeline = [];
+            $skills = ['Flutter', 'Laravel', 'Tailwind', 'Clean Architecture', 'CI/CD', 'TypeScript'];
+            
+            return view('about', compact('contact', 'timeline', 'skills'));
         }
-
-        $contact = [
-            'email' => $about->email,
-            'phone' => $about->phone,
-            'location' => $about->location,
-            'availability' => $about->availability,
-        ];
-
-        $timeline = $about->timeline;
-        $skills = $about->skills;
-
-        return view('about', compact('contact', 'timeline', 'skills'));
     }
 
     public function getProjectData($id)
