@@ -19,6 +19,11 @@
         overflow: hidden;
     }
 
+    /* Remove default underline from all links */
+    a {
+        @apply no-underline;
+    }
+
     /* Smooth fade animation for image covers */
     @keyframes fadeInImage {
         from {
