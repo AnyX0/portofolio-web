@@ -6,19 +6,9 @@
       "runtime": "vercel-php@0.7.4"
     }
   },
-  "rewrites": [
-    { "source": "/storage/(.*)", "destination": "/public/storage/$1" },
-    { "source": "/build/(.*)", "destination": "/public/build/$1" },
-    { "source": "/css/(.*)", "destination": "/public/css/$1" },
-    { "source": "/js/(.*)", "destination": "/public/js/$1" },
-    { "source": "/images/(.*)", "destination": "/public/images/$1" },
-    { "source": "/robots.txt", "destination": "/public/robots.txt" },
-    { "source": "/favicon.ico", "destination": "/public/favicon.ico" },
-    { "source": "/cursor.png", "destination": "/public/cursor.png" },
-    { "source": "/hand-pointer.png", "destination": "/public/hand-pointer.png" },
-    { "source": "/api/(.*)", "destination": "/api/index.php" },
-    { "source": "/project/(.*)", "destination": "/api/index.php" },
-    { "source": "/(.*)", "destination": "/api/index.php" }
+  "routes": [
+    { "src": "/build/(.*)", "dest": "/public/build/$1" },
+    { "src": "/(.*)", "dest": "/api/index.php" }
   ],
   "buildCommand": "npm run build",
   "env": {
