@@ -262,6 +262,11 @@
                         <p id="previewSummary" class="text-slate-300 leading-relaxed"></p>
                     </div>
 
+                    <!-- Live Preview -->
+                    <div id="previewIframeContainer" class="rounded-xl overflow-hidden border border-white/10 bg-black/40">
+                        <div class="p-4 text-slate-300 text-sm">Memuat live preview…</div>
+                    </div>
+
                     <!-- Project Details Loading -->
                     <div id="previewDetails" class="space-y-4">
                         <div class="animate-pulse space-y-4">
@@ -292,6 +297,7 @@
             const summaryEl = document.getElementById('previewSummary');
             const detailsEl = document.getElementById('previewDetails');
             const linkEl = document.getElementById('previewLink');
+            const iframeContainer = document.getElementById('previewIframeContainer');
 
             // Set basic info
             titleEl.textContent = title;
@@ -307,12 +313,28 @@
                 statusEl.textContent = 'Draft';
             }
 
+            // Determine preview URL and render iframe (fallback to provided link)
+            let previewUrl = link && link !== '#' ? link : null;
+
             // Fetch detailed project info by slug
             try {
                 const response = await fetch(`/api/projects/slug/${projectSlug}`);
-                if (!response.ok) throw new Error('Failed to fetch');
-                
-                const data = await response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch (_) {
+                    data = null;
+                }
+                if (!response.ok) {
+                    const errMsg = (data && (data.error || data.message)) ? (data.error || data.message) : 'Gagal mengambil data project';
+                    throw new Error(errMsg);
+                }
+
+                // Prefer live_url from API if available
+                if (data.live_url) {
+                    previewUrl = data.live_url;
+                    linkEl.href = data.live_url;
+                }
                 
                 // Build details HTML
                 let detailsHTML = '';
@@ -340,7 +362,27 @@
                 detailsEl.innerHTML = detailsHTML || '<p class="text-slate-400">Data lengkap tidak tersedia</p>';
             } catch (error) {
                 console.error('Error fetching project:', error);
-                detailsEl.innerHTML = '<p class="text-red-400">Gagal memuat detail project</p>';
+                detailsEl.innerHTML = `<p class="text-red-400">${error.message}</p>`;
+            }
+
+            // Render iframe preview
+            iframeContainer.innerHTML = '';
+            if (previewUrl && /^https?:\/\//.test(previewUrl)) {
+                const iframe = document.createElement('iframe');
+                iframe.src = previewUrl;
+                iframe.className = 'w-full h-[480px] bg-black';
+                iframe.referrerPolicy = 'no-referrer';
+                iframe.allow = 'fullscreen';
+                iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-popups';
+                iframeContainer.appendChild(iframe);
+
+                // Fallback notice if the site blocks embedding
+                const notice = document.createElement('div');
+                notice.className = 'p-3 text-xs text-slate-400 border-t border-white/10';
+                notice.textContent = 'Catatan: Beberapa situs mungkin memblokir embed (X-Frame-Options).';
+                iframeContainer.appendChild(notice);
+            } else {
+                iframeContainer.innerHTML = '<div class="p-4 text-slate-300 text-sm">Live preview tidak tersedia untuk URL ini.</div>';
             }
 
             // Show modal

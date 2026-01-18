@@ -76,36 +76,84 @@ Or use the **Deployments** tab and add a post-deploy script.
 
 ---
 
-## Option 2: Vercel (Frontend Only)
+## Option 2: Vercel (Full Laravel on Serverless)
 
-If you want a separate frontend on Vercel with API proxy to Clever Cloud backend:
+Deploy full Laravel app on Vercel using `vercel-php` runtime.
 
 ### Prerequisites
 - Vercel account at [vercel.com](https://vercel.com)
-- Clever Cloud backend already deployed (see Option 1)
+- Remote database (MySQL/PostgreSQL) accessible from Vercel
+- Cloudinary credentials (optional for image features)
 
-### Step 1: Create Vercel Project
-1. Connect your GitHub repo to Vercel
-2. Create a new project (can be a subfolder or separate repo for frontend)
+### How It Works
+- `vercel.json` routes all requests to `api/index.php` which boots Laravel via `public/index.php`.
+- `functions.api/index.php.runtime` uses `vercel-php@0.7.4` to build and run PHP code.
+- `installCommand` installs Composer and Node deps; `buildCommand` runs Vite build.
 
-### Step 2: Configure vercel.json
-A `vercel.json` is already in the root directory with API rewrites. Update it:
+### Step 1: Configure Environment Variables in Vercel
+Set the following in Vercel Project → Settings → Environment Variables:
 
-```json
-{
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://your-app.cleverapps.io/$1"
-    }
-  ]
-}
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=base64:<your-app-key>
+APP_URL=https://<your-vercel-domain>
+
+# Database (MySQL or PostgreSQL)
+DB_CONNECTION=mysql
+DB_HOST=<db-host>
+DB_PORT=3306
+DB_DATABASE=<db-name>
+DB_USERNAME=<db-user>
+DB_PASSWORD=<db-password>
+
+# Cloudinary (optional)
+CLOUDINARY_CLOUD_NAME=<your-cloud-name>
+CLOUDINARY_API_KEY=<your-api-key>
+CLOUDINARY_API_SECRET=<your-api-secret>
+CLOUDINARY_UPLOAD_PRESET=<your-upload-preset>
+
+# Serverless-friendly caches
+APP_CONFIG_CACHE=/tmp/config.php
+APP_EVENTS_CACHE=/tmp/events.php
+APP_PACKAGES_CACHE=/tmp/packages.php
+APP_ROUTES_CACHE=/tmp/routes.php
+APP_SERVICES_CACHE=/tmp/services.php
+VIEW_COMPILED_PATH=/tmp
+CACHE_DRIVER=array
+LOG_CHANNEL=stderr
+SESSION_DRIVER=cookie
+QUEUE_CONNECTION=sync
 ```
 
-Replace `your-app.cleverapps.io` with your actual Clever Cloud app URL.
+Generate `APP_KEY` locally:
 
-### Step 3: Build & Deploy
-Vercel automatically builds and deploys on push to GitHub.
+```powershell
+php artisan key:generate --show
+```
+
+### Step 2: Push to GitHub
+
+```powershell
+git add .
+git commit -m "Deployable: Vercel serverless setup + live preview"
+git push origin main
+```
+
+### Step 3: Create Vercel Project from GitHub
+- Import the repo `AnyX0/portofolio-web` in Vercel.
+- Ensure `Root Directory` is the repository root.
+- Vercel will run `installCommand` (Composer + NPM) and `buildCommand` (Vite).
+
+### Step 4: Run Migrations (First Deploy)
+Use a one-time script from your local machine to run migrations against the remote DB or expose an admin route.
+
+From local (pointing to the same DB):
+```powershell
+php artisan migrate --force
+```
+
+If DB is not accessible locally, consider a small protected endpoint to trigger migrations manually (not included by default for safety).
 
 ---
 

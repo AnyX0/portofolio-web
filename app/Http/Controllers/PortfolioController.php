@@ -126,10 +126,19 @@ class PortfolioController extends Controller
 
     public function getProjectDataBySlug($slug)
     {
-        $project = Project::where('slug', $slug)->where('is_published', true)->first();
+        // Validate slug format (ASCII slug: letters, numbers, dashes)
+        if (!preg_match('/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/', $slug)) {
+            return response()->json(['error' => 'Slug tidak valid'], 422);
+        }
+
+        $project = Project::where('slug', $slug)->first();
 
         if (!$project) {
             return response()->json(['error' => 'Project tidak ditemukan'], 404);
+        }
+
+        if (!$project->is_published) {
+            return response()->json(['error' => 'Project belum diterbitkan'], 403);
         }
 
         return response()->json([

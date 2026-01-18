@@ -49,6 +49,7 @@
     }
   ],
   "buildCommand": "npm run build",
+  "installCommand": "composer install --no-dev --prefer-dist --no-interaction && (npm ci || npm i)",
   "env": {
     "APP_ENV": "production",
     "APP_DEBUG": "false",
