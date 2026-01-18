@@ -77,22 +77,81 @@
             </div>
 
             <div class="h-px w-full bg-gradient-to-r from-white/30 via-white/10 to-transparent"></div>
-            <div class="space-y-4">
+            <div class="space-y-6">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-sm uppercase tracking-[0.25em] text-slate-400">Riwayat Singkat</h3>
-                    <span class="text-[12px] text-slate-400">Ringkasan perjalanan</span>
+                    <h3 class="text-lg font-semibold text-white">Pengalaman Kerja</h3>
+                    <span class="text-[12px] text-slate-400">{{ count($timeline) }} posisi</span>
                 </div>
-                <ul class="space-y-3">
-                    @foreach($timeline as $item)
-                        <li class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-xs text-cyan-200">{{ $item['year'] }}</span>
-                                <span class="px-2 py-1 rounded-full bg-white/10 text-[11px] text-slate-200 border border-white/10">{{ $item['title'] }}</span>
+                
+                <!-- Timeline Container -->
+                <div class="space-y-0 relative">
+                    @foreach($timeline as $index => $item)
+                        <div class="relative flex gap-6">
+                            <!-- Timeline Line & Dots -->
+                            <div class="absolute left-4 top-0 bottom-0 flex flex-col items-center">
+                                <!-- Dot -->
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-400 to-indigo-500 border-4 border-slate-950 shadow-lg shadow-cyan-500/30 relative z-10 flex items-center justify-center">
+                                    <div class="w-2 h-2 rounded-full bg-white"></div>
+                                </div>
+                                <!-- Connecting Line -->
+                                @if($index < count($timeline) - 1)
+                                    <div class="flex-1 w-1 bg-gradient-to-b from-cyan-400/50 to-indigo-500/20"></div>
+                                @endif
                             </div>
-                            <p class="text-sm text-slate-200 leading-relaxed">{{ $item['desc'] }}</p>
-                        </li>
+
+                            <!-- Content -->
+                            <div class="pl-4 pb-8 flex-1">
+                                <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-slate-900/30 p-5 hover:border-cyan-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
+                                    <!-- Header -->
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-white">{{ $item['title'] ?? 'Experience' }}</h4>
+                                            <p class="text-sm text-cyan-300">{{ $item['company'] ?? 'Company' }}</p>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <span class="px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-xs text-cyan-200">{{ $item['type'] ?? 'Position' }}</span>
+                                            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300">{{ $item['duration'] ?? '1 year' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Timeline Info -->
+                                    <div class="flex items-center gap-2 mb-3 text-xs text-slate-400">
+                                        <span class="font-semibold text-cyan-200">{{ $item['year'] ?? 'Year' }}</span>
+                                        <span>•</span>
+                                        <span>{{ $item['month'] ?? 'Month' }}</span>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <p class="text-sm text-slate-300 leading-relaxed mb-4">{{ $item['desc'] ?? 'Description' }}</p>
+
+                                    <!-- Achievements -->
+                                    @if(isset($item['achievements']) && count($item['achievements']) > 0)
+                                        <div class="mb-4 space-y-2">
+                                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-[0.15em]">Key Achievements</p>
+                                            <ul class="space-y-1.5">
+                                                @foreach($item['achievements'] as $achievement)
+                                                    <li class="flex gap-2 text-xs text-slate-300">
+                                                        <span class="text-cyan-400 mt-1 flex-shrink-0">▪</span>
+                                                        <span>{{ $achievement }}</span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+
+                                    <!-- Skills Used -->
+                                    @if(isset($item['skills']) && count($item['skills']) > 0)
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach($item['skills'] as $skill)
+                                                <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] text-slate-300 hover:border-cyan-400/30 transition-colors">{{ $skill }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
-                </ul>
+                </div>
             </div>
         </div>
     </section>
