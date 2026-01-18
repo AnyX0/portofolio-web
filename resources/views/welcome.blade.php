@@ -114,7 +114,7 @@
                     <a href="{{ route('projects') }}" class="px-8 py-4 rounded-full bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all hover:scale-105">
                         Lihat Portfolio
                     </a>
-                    <a href="mailto:andi@example.com" class="px-8 py-4 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-slate-200 font-semibold hover:bg-white/10 transition-all hover:scale-105">
+                    <a href="mailto:moxer404@aol.com" class="px-8 py-4 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-slate-200 font-semibold hover:bg-white/10 transition-all hover:scale-105">
                         Hubungi Saya
                     </a>
                 </div>
