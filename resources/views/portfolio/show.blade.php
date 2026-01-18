@@ -290,6 +290,35 @@
     </div>
 
     <script>
+        // Helper: try multiple API bases to avoid domain mismatch (www vs non-www)
+        async function fetchProjectDataWithFallback(projectSlug) {
+            const currentOrigin = window.location.origin.replace(/\/$/, '');
+            const hasWww = currentOrigin.includes('://www.');
+            const toggledOrigin = hasWww
+                ? currentOrigin.replace('://www.', '://')
+                : currentOrigin.replace('://', '://www.');
+            const appUrlBase = '{{ rtrim(config('app.url'), '/') }}';
+
+            const candidates = [currentOrigin, toggledOrigin, appUrlBase]
+                .filter((v, i, arr) => v && arr.indexOf(v) === i);
+
+            let lastError = null;
+            for (const base of candidates) {
+                try {
+                    const res = await fetch(`${base}/api/projects/slug/${projectSlug}`);
+                    let data = null;
+                    try { data = await res.json(); } catch (_) {}
+                    if (res.ok && data) {
+                        return { data, base };
+                    }
+                    lastError = new Error((data && (data.error || data.message)) || `Request failed (${res.status}) at ${base}`);
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+            throw lastError || new Error('Gagal mengambil data project');
+        }
+
         async function openProjectPreview(projectSlug, title, summary, link, isPublished) {
             const modal = document.getElementById('previewModal');
             const titleEl = document.getElementById('previewTitle');
@@ -316,19 +345,9 @@
             // Determine preview URL and render iframe (fallback to provided link)
             let previewUrl = link && link !== '#' ? link : null;
 
-            // Fetch detailed project info by slug
+            // Fetch detailed project info by slug (with domain fallback)
             try {
-                const response = await fetch(`/api/projects/slug/${projectSlug}`);
-                let data;
-                try {
-                    data = await response.json();
-                } catch (_) {
-                    data = null;
-                }
-                if (!response.ok) {
-                    const errMsg = (data && (data.error || data.message)) ? (data.error || data.message) : 'Gagal mengambil data project';
-                    throw new Error(errMsg);
-                }
+                const { data } = await fetchProjectDataWithFallback(projectSlug);
 
                 // Prefer live_url from API if available
                 if (data.live_url) {
