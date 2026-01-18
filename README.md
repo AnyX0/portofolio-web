@@ -7,20 +7,22 @@ Portfolio website dengan Laravel 12, Cloudinary image storage, dan MySQL.
 - ✅ Multiple image upload dengan Cloudinary
 - ✅ Portfolio project management dengan image galleries
 - ✅ Admin console untuk CRUD projects
+- ✅ **Live Preview Modal** dengan iframe untuk menampilkan project URL
 - ✅ Image slider dengan Swiper.js
 - ✅ Image caching (24 jam) untuk performa optimal
 - ✅ Responsive design dengan Tailwind CSS
 - ✅ AJAX upload dengan progress bar
 - ✅ Delete images dari Cloudinary
 - ✅ Drag-drop image reordering
+- ✅ API endpoint dengan validasi slug dan error handling
 
 ## 🛠️ Tech Stack
 
 - **Backend:** Laravel 12.44 (PHP 8.3)
-- **Frontend:** Blade Templates, Tailwind CSS, Swiper.js
-- **Database:** MySQL 8.0
+- **Frontend:** Blade Templates, Tailwind CSS v4, Swiper.js
+- **Database:** MySQL 8.0 / PostgreSQL (Vercel-compatible)
 - **Image Storage:** Cloudinary
-- **Hosting:** Railway (Recommended)
+- **Hosting:** Vercel (Serverless), Railway, or Clever Cloud
 
 ## 📦 Quick Start
 
@@ -71,23 +73,37 @@ exit
 
 ## 🚀 Deployment
 
-**📖 Full deployment guide dengan MySQL remote:** [DEPLOYMENT.md](DEPLOYMENT.md)
+**📖 Full deployment guide:** [DEPLOYMENT.md](DEPLOYMENT.md)
 
-### Quick Railway Deploy
+### Option 1: Vercel (Serverless) ⚡
 
-Railway adalah platform hosting all-in-one yang **gratis** untuk portfolio!
+Deploy full Laravel app dengan serverless PHP di Vercel:
 
-**Step singkat:**
-1. Push project ke GitHub
-2. Buat account [railway.app](https://railway.app)
-3. Deploy from GitHub repo
-4. Add MySQL service (1 klik)
-5. Set environment variables
-6. Run migrations via Railway console
-7. Done! 🎉
+1. **Push ke GitHub** (✅ sudah dilakukan!)
+2. **Import di Vercel** → [vercel.com/new](https://vercel.com/new)
+3. **Set Environment Variables** di Vercel:
+   ```env
+   APP_KEY=base64:...  # Generate dengan: php artisan key:generate --show
+   APP_ENV=production
+   APP_DEBUG=false
+   DB_CONNECTION=mysql
+   DB_HOST=your-db-host
+   DB_DATABASE=your-db-name
+   DB_USERNAME=your-db-user
+   DB_PASSWORD=your-db-password
+   CLOUDINARY_CLOUD_NAME=...
+   CLOUDINARY_API_KEY=...
+   CLOUDINARY_API_SECRET=...
+   ```
+4. **Deploy** → Vercel otomatis build & deploy
+5. **Run migrations** dari lokal ke DB yang sama:
+   ```bash
+   php artisan migrate --force
+   ```
 
-**Total waktu:** ~15 menit dari zero ke live
-**Cost:** $0/bulan (free tier $5 credit cukup)
+### Option 2: Railway / Clever Cloud
+
+Detail lengkap tersedia di [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## 📁 Project Structure
 
