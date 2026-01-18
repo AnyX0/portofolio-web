@@ -56,6 +56,14 @@
       "dest": "/api/index.php"
     }
   ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.anyx-project.my.id" }],
+      "destination": "https://anyx-project.my.id/$1",
+      "permanent": true
+    }
+  ],
   "buildCommand": "npm run build",
   "env": {
     "APP_ENV": "production",
