@@ -71,9 +71,9 @@
                                 </span>
                             </div>
                             
-                            <h3 class="text-xl font-semibold text-white leading-tight group-hover:text-cyan-300 transition">
+                            <a href="{{ route('project.show', $project->slug) }}" class="text-xl font-semibold text-white leading-tight group-hover:text-cyan-300 transition hover:underline">
                                 {{ $project->title }}
-                            </h3>
+                            </a>
                             
                             <p class="text-sm text-slate-300 leading-relaxed line-clamp-3">
                                 {{ $project->summary }}
@@ -90,7 +90,7 @@
                             @endif
                             
                             <div class="flex items-center gap-2 text-sm text-cyan-400 mt-auto pt-2 transition-all duration-300 group-hover:gap-3">
-                                <a href="{{ route('project.show', $project->slug) }}" class="flex-1">Lihat detail</a>
+                                <a href="{{ route('project.show', $project->slug) }}" class="flex-1 hover:underline">Lihat detail</a>
                                 <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
