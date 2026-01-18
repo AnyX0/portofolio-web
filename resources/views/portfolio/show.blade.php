@@ -263,7 +263,7 @@
                     </div>
 
                     <!-- Live Preview -->
-                    <div id="previewIframeContainer" class="rounded-xl overflow-hidden border border-white/10 bg-black/40">
+                    <div id="previewIframeContainer" class="rounded-xl overflow-hidden border border-white/10 bg-black/40 max-h-[720px]">
                         <div class="p-4 text-slate-300 text-sm">Memuat live preview…</div>
                     </div>
 
@@ -370,7 +370,11 @@
             if (previewUrl && /^https?:\/\//.test(previewUrl)) {
                 const iframe = document.createElement('iframe');
                 iframe.src = previewUrl;
-                iframe.className = 'w-full h-[480px] bg-black';
+                iframe.className = 'w-full h-[720px] bg-black';
+                iframe.style.transform = 'scale(0.8)';
+                iframe.style.transformOrigin = 'top left';
+                iframe.style.width = '125%';
+                iframe.style.height = '900px';
                 iframe.referrerPolicy = 'no-referrer';
                 iframe.allow = 'fullscreen';
                 iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-popups';
