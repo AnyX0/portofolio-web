@@ -1,0 +1,5 @@
+# GitHub Pages workflow disabled - using Vercel for deployment instead
+# To re-enable in future, create a workflow that builds and deploys to GitHub Pages
+
+# Note: Pages workflow is managed automatically by GitHub Pages settings
+# Disable it in: Settings → Pages → Source = None
