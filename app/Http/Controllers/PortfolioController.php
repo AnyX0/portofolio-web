@@ -71,6 +71,8 @@ class PortfolioController extends Controller
             
             if (!$about) {
                 $about = About::create([
+                    'name' => 'Andi Utama',
+                    'title' => 'Mobile & Web Engineer',
                     'email' => 'moxer404@aol.com',
                     'phone' => '+62 822 6989 8199',
                     'location' => 'Padang, Indonesia',
@@ -124,7 +126,11 @@ class PortfolioController extends Controller
                             'skills' => ['PHP', 'Laravel', 'MySQL', 'Unit Testing', 'Git'],
                         ],
                     ]),
-                    'skills' => json_encode(['Flutter', 'Laravel', 'Tailwind', 'Clean Architecture', 'CI/CD', 'TypeScript', 'Docker', 'PostgreSQL', 'AWS']),
+                    'skills' => json_encode([
+                        ['type' => 'Fokus', 'title' => 'Performa & UX', 'detail' => 'Micro-interactions, smooth flow.'],
+                        ['type' => 'Stack', 'title' => 'Flutter · Laravel', 'detail' => 'Tailwind, TS, REST/WS.'],
+                        ['type' => 'Pipeline', 'title' => 'CI/CD & QA', 'detail' => 'Testing, linting, rollout.'],
+                    ]),
                     'bio' => null,
                 ]);
             }
@@ -137,9 +143,28 @@ class PortfolioController extends Controller
             ];
 
             $timeline = is_array($about->timeline) ? $about->timeline : [];
-            $skills = is_array($about->skills) ? $about->skills : [];
 
-            return view('about', compact('contact', 'timeline', 'skills'));
+            // Normalisasi skills agar selalu berbentuk array of objects {type,title,detail}
+            $skillsRaw = is_array($about->skills) ? $about->skills : [];
+            $skills = collect($skillsRaw)->map(function ($item) {
+                if (is_string($item)) {
+                    return [
+                        'type' => 'Skill',
+                        'title' => $item,
+                        'detail' => '',
+                    ];
+                }
+                return [
+                    'type' => $item['type'] ?? 'Skill',
+                    'title' => $item['title'] ?? '',
+                    'detail' => $item['detail'] ?? '',
+                ];
+            })->toArray();
+            $name = $about->name ?? 'Andi Utama';
+            $title = $about->title ?? 'Mobile & Web Engineer';
+            $bio = $about->bio;
+
+            return view('about', compact('contact', 'timeline', 'skills', 'name', 'title', 'bio'));
         } catch (\Exception $e) {
             \Log::error('About page error: ' . $e->getMessage());
             
@@ -152,9 +177,16 @@ class PortfolioController extends Controller
             ];
             
             $timeline = [];
-            $skills = ['Flutter', 'Laravel', 'Tailwind', 'Clean Architecture', 'CI/CD', 'TypeScript'];
+            $skills = [
+                ['type' => 'Fokus', 'title' => 'Performa & UX', 'detail' => 'Micro-interactions, smooth flow.'],
+                ['type' => 'Stack', 'title' => 'Flutter · Laravel', 'detail' => 'Tailwind, TS, REST/WS.'],
+                ['type' => 'Pipeline', 'title' => 'CI/CD & QA', 'detail' => 'Testing, linting, rollout.'],
+            ];
+            $name = 'Andi Utama';
+            $title = 'Mobile & Web Engineer';
+            $bio = null;
             
-            return view('about', compact('contact', 'timeline', 'skills'));
+            return view('about', compact('contact', 'timeline', 'skills', 'name', 'title', 'bio'));
         }
     }
 

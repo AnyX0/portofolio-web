@@ -1,0 +1,169 @@
+Dokumentasi Struktur Proyek: portofolio-web
+Tanggal: 20 Januari 2026
+
+Ringkasan
+- Proyek berbasis Laravel + Vite untuk aplikasi web portofolio, dilengkapi integrasi Cloudinary dan konfigurasi deploy (Vercel).
+- Dokumen ini menjelaskan fungsi setiap berkas/folder yang tertera dalam struktur proyek, agar memudahkan pemeliharaan dan pengembangan.
+
+Penjelasan Singkat File
+- artisan: CLI Laravel untuk perintah dev/ops (migrate, serve, queue, dsb.).
+- composer.json: Manifes dependensi PHP dan autoload; mengatur paket Laravel serta script Composer.
+- package.json: Manifes dependensi JS (Vite, ESLint) dan script frontend (dev/build).
+- vite.config.js: Konfigurasi bundler Vite (alias, plugin, output build).
+- vercel.json: Pengaturan deployment di Vercel (rewrites, env, output).
+- DEPLOYMENT.md: Panduan langkah deploy aplikasi ini.
+- README.md: Ringkasan setup dan cara menjalankan proyek.
+- phpunit.xml: Konfigurasi PHPUnit untuk testing.
+- api/index.php: Entry serverless Vercel untuk jalur /api yang mem-boot Laravel/handler khusus.
+- app/Http/Controllers: Controller Laravel yang menangani request/response.
+- app/Http/Middleware: Middleware request (auth, CORS, rate-limit, dsb.).
+- app/Models/User.php: Model Eloquent tabel users (auth).
+- app/Models/Project.php: Model Eloquent tabel projects (data portofolio, relasi, Cloudinary).
+- app/Models/About.php: Model Eloquent tabel about (profil/biografi).
+- app/Providers/AppServiceProvider.php: Bootstrapping service container dan konfigurasi global.
+- app/Services/CloudinaryUploader.php: Layanan upload gambar ke Cloudinary.
+- app/Services/CloudinaryImageFetcher.php: Layanan ambil/list detail gambar Cloudinary.
+- app/Services/CloudinaryImageDeleter.php: Layanan hapus gambar di Cloudinary.
+- bootstrap/app.php, bootstrap/providers.php: Inisialisasi kernel dan daftar service provider.
+- config/*.php: Seluruh konfigurasi aplikasi (app, auth, cache, cors, database, filesystems, logging, mail, queue, services, session, uploads).
+- database/migrations/*: Skrip skema database (users, cache, jobs, projects beserta variasi cover_image/cloudinary_folder/archived_at, about).
+- database/factories/UserFactory.php: Factory dummy user untuk seeding/testing.
+- database/seeders/DatabaseSeeder.php: Orkestrasi seeding awal.
+- public/index.php: Front controller Laravel.
+- public/build: Hasil build Vite (JS/CSS/assets produksi).
+- public/robots.txt: Instruksi crawler.
+- public/storage: Symlink ke storage/app/public untuk file publik.
+- resources/css/app.css: Stylesheet utama yang di-bundle Vite.
+- resources/js/*: Sumber JS/TS frontend (entry Vite, komponen; jika ada React/Vue di sini).
+- resources/views/*: Template Blade untuk halaman server-rendered.
+- routes/web.php: Definisi route web (GET/POST).
+- routes/console.php: Definisi command artisan kustom.
+- storage/*: Cache framework, logs, file upload.
+- tests/TestCase.php: Base class testing Laravel.
+- tests/Feature/*: Test end-to-end fitur.
+- tests/Unit/*: Test unit.
+- tests/uploads/*: Fixture file untuk uji unggahan.
+- vendor/*: Dependensi Composer (jangan diubah manual).
+
+Jenis File
+- PHP backend: app/*, config/*, routes/*.php, database/* (migrations, factories, seeders), tests/*, bootstrap/*.php, artisan.
+- PHP entry/serverless: api/index.php (Vercel), public/index.php (front controller Laravel).
+- JS/TS frontend: resources/js/* (entry Vite, komponen React/Vue jika ada), vite.config.js (config bundler), package.json (script/dev deps), public/build/* (output bundel produksi).
+- CSS: resources/css/app.css (stylesheet utama dibundle Vite).
+- Blade template: resources/views/* (server-rendered HTML via Blade).
+- Dokumen & konfigurasi: README.md, DEPLOYMENT.md, vercel.json, phpunit.xml, docs/postman/* (koleksi/env Postman).
+- Asset publik & storage: public/robots.txt, public/storage (symlink ke storage/app/public), storage/* (cache/log/upload), vendor/* (dependensi Composer).
+
+Root Folder
+- artisan: CLI Laravel untuk menjalankan perintah seperti migrate, tinker, queue, dsb.
+- composer.json: Manifes dependensi PHP (Laravel dan paket lain), script Composer, dan autoload.
+- DEPLOYMENT.md: Panduan/penjelasan proses deployment aplikasi (konten spesifik tergantung isi file).
+- package.json: Manifes dependensi JavaScript/Node (Vite, plugin), scripts build/dev/test frontend.
+- phpunit.xml: Konfigurasi PHPUnit (framework pengujian PHP) untuk menjalankan test.
+- README.md: Ringkasan proyek, cara setup dan menjalankan secara umum.
+- vercel.json: Konfigurasi Vercel (routing, rewrites, output, env) untuk deployment serverless/static.
+- vite.config.js: Konfigurasi Vite untuk bundling aset frontend (alias, plugin, build options).
+
+Folder api/
+- index.php: Endpoint serverless (konvensi Vercel) untuk menangani request di jalur /api; biasanya menginisiasi bootstrap Laravel atau menangani fungsi khusus.
+
+Folder app/
+- Http/:
+  - Controllers/: Tempat controller Laravel yang menangani logika request/response. Tidak ditampilkan spesifik di struktur, namun di sini biasanya terdapat controller untuk halaman dan API.
+  - Middleware/: Tempat middleware (autentikasi, CORS, rate limit, dsb) yang dieksekusi sebelum/selama request diproses.
+- Models/:
+  - About.php: Model Eloquent untuk tabel "about"; mewakili data profil/about pada portofolio.
+  - Project.php: Model Eloquent untuk tabel "projects"; memuat relasi/atribut proyek (termasuk integrasi Cloudinary bila ada).
+  - User.php: Model Eloquent bawaan untuk tabel "users" (autentikasi, peran, dsb).
+- Providers/:
+  - AppServiceProvider.php: Service provider umum; tempat bootstrapping komponen aplikasi (binding service container, konfigurasi global).
+- Services/ (Integrasi Cloudinary):
+  - CloudinaryImageDeleter.php: Layanan untuk menghapus gambar dari Cloudinary (menggunakan API Cloudinary).
+  - CloudinaryImageFetcher.php: Layanan untuk mengambil/menelusuri gambar dari Cloudinary (list, detail, URL).
+  - CloudinaryUploader.php: Layanan untuk mengunggah gambar ke Cloudinary (handle folder, preset, respons upload).
+
+Folder bootstrap/
+- app.php: Inisialisasi aplikasi Laravel; membuat instance dan mendaftarkan kernel.
+- providers.php: Daftar provider yang akan dimuat saat bootstrap.
+- cache/ (tergenerasi):
+  - packages.php: Cache daftar paket yang telah di-resolve oleh Composer/Laravel.
+  - services.php: Cache binding layanan/konfigurasi untuk performa.
+
+Folder config/
+- app.php: Konfigurasi umum aplikasi (name, env, timezone, locale, dsb).
+- auth.php: Konfigurasi autentikasi (guards, providers, password reset).
+- cache.php: Konfigurasi caching (driver file, redis, ttl, dsb).
+- cors.php: Pengaturan CORS (allowed origins, methods, headers).
+- database.php: Pengaturan koneksi database (mysql/sqlite/pgsql), pool, redis.
+- filesystems.php: Pengaturan disk penyimpanan (local, public, s3, cloudinary via adapter jika ada).
+- logging.php: Konfigurasi logging (stack, daily, channels).
+- mail.php: Pengaturan email (smtp, mailers, from, queue mail).
+- queue.php: Konfigurasi antrean (driver database/redis, jobs, retry, failed jobs).
+- services.php: Kredensial/endpoint layanan pihak ketiga (cloudinary, mail, oauth, dsb).
+- session.php: Konfigurasi sesi (driver, lifetime, cookie, secure, same-site).
+- uploads.php: Konfigurasi kustom untuk unggahan (folder, batas ukuran, validasi mime) — spesifik aplikasi.
+
+Folder database/
+- factories/:
+  - UserFactory.php: Factory untuk menghasilkan data pengguna contoh (seeding/testing).
+- migrations/ (urutan eksekusi sesuai timestamp):
+  - 0001_01_01_000000_create_users_table.php: Membuat tabel "users" untuk autentikasi.
+  - 0001_01_01_000001_create_cache_table.php: Membuat tabel cache aplikasi (opsional sesuai fitur).
+  - 0001_01_01_000002_create_jobs_table.php: Membuat tabel jobs untuk antrean (queue processing).
+  - 2025_12_27_000000_create_projects_table.php: Membuat tabel "projects" (atribut proyek portofolio).
+  - 2025_12_28_000001_add_cloudinary_folder_to_projects.php: Menambah kolom "cloudinary_folder" pada tabel projects.
+  - 2025_12_28_060959_add_cover_image_to_projects.php: Menambah kolom "cover_image" untuk gambar sampul proyek.
+  - 2025_12_28_062543_change_cover_image_to_text_in_projects.php: Mengubah tipe kolom "cover_image" menjadi text (menampung URL/JSON panjang).
+  - 2025_12_28_072340_add_cover_image_to_projects.php: Penambahan kolom "cover_image" (mungkin revisi/duplikasi; sesuaikan urutan migrasi saat menjalankan).
+  - 2025_12_28_073914_add_cover_image_to_projects.php: Penambahan kolom "cover_image" (variasi lain; pastikan migrasi konsisten saat produksi).
+  - 2025_12_28_081442_remove_cover_image_from_projects.php: Menghapus kolom "cover_image" (membersihkan inkonsistensi atau pindah ke sistem lain).
+  - 2026_01_12_190427_add_archived_at_to_projects_table.php: Menambah kolom timestamp "archived_at" untuk arsip proyek secara soft-archive.
+  - 2026_01_16_160142_create_about_table.php: Membuat tabel "about" untuk menyimpan informasi profil/biografi.
+- seeders/:
+  - DatabaseSeeder.php: Menjalankan seeding awal (memanggil factory/seeders lain sesuai kebutuhan).
+
+Folder public/
+- storage: Symlink ke storage/app/public untuk melayani file publik yang diunggah.
+- index.php: Front controller Laravel yang mem-boot aplikasi untuk semua request web.
+- robots.txt: Instruksi untuk crawler mesin pencari (izinkan/blokir jalur tertentu).
+- build/ (output Vite untuk produksi):
+  - manifest.json: Peta aset hasil build (digunakan untuk versioning dan referensi di blade).
+  - assets/: Folder aset terbundel (JS/CSS/images) yang digunakan oleh halaman.
+
+Folder resources/
+- css/:
+  - app.css: Stylesheet utama aplikasi, di-bundle oleh Vite.
+- js/: Kode sumber JavaScript/TypeScript frontend (komponen, inisialisasi, utilitas). Detail file tidak ditampilkan di struktur; biasanya ada main.js, bootstrap.js, dsb.
+- views/: Template Blade (HTML server-side rendering) untuk halaman. File spesifik tidak ditampilkan, namun contoh: welcome.blade.php, layout, partials.
+
+Folder routes/
+- console.php: Definisi perintah Artisan berbasis closure/command; tidak menangani HTTP.
+- web.php: Definisi rute web (GET/POST), middleware web, penautan controller/view.
+
+Folder storage/
+- app/: Penyimpanan file aplikasi (non-publik) atau publik tergantung disk.
+- framework/: Cache framework (views compiled, sessions, cache, testing tmp).
+- logs/: Berkas log aplikasi (laravel.log, rotasi harian) untuk debugging.
+
+Folder tests/
+- TestCase.php: Kelas dasar untuk test (setup aplikasi, helpers).
+- Feature/: Test fungsional/fitur (memeriksa alur end-to-end rute/controller).
+- Unit/: Test unit (memeriksa fungsi/kelas secara terisolasi).
+- uploads/: Folder bantu untuk berkas uji unggahan (fixture testing).
+
+Folder vendor/ (tergenerate oleh Composer)
+- autoload.php: Entrypoint autoload Composer untuk memuat kelas paket.
+- bin/, symfony/, laravel/, guzzlehttp/, psr/, dsb.: Paket pihak ketiga yang menjadi dependensi framework dan fitur aplikasi. Direkomendasikan untuk tidak mengubah isi folder vendor secara manual.
+
+Catatan Tambahan
+- Integrasi Cloudinary: Layanan di app/Services mengelola siklus hidup gambar (upload, fetch, delete). Pastikan konfigurasi kredensial di config/services.php dan env.
+- Migrasi berulang untuk cover_image: Ada beberapa migrasi terkait kolom yang sama. Saat menjalankan migrasi di produksi, pastikan urutan dan kondisi kolom konsisten (periksa isi file migrasi untuk skema final yang diinginkan).
+- Deploy ke Vercel: vercel.json dan folder api/ mendukung pola serverless. Perlu memastikan kompatibilitas Laravel (mis. menggunakan adapter atau konfigurasi yang sesuai untuk routing PHP di Vercel).
+
+Cara Menggunakan Dokumen Ini
+- Gunakan sebagai peta referensi cepat untuk memahami letak dan peran file.
+- Saat menambah fitur, periksa folder terkait (controller -> routes -> views, layanan -> config -> env, migrasi -> model -> seeder).
+- Untuk debugging, cek logs di storage/logs dan konfigurasi di config/*. 
+
+Saran Lanjutan
+- resources/js dan resources/views: Jika Anda ingin dokumentasi lebih rinci (file per file), mohon berikan daftar isi aktual dari folder tersebut agar dapat dijelaskan satu per satu.

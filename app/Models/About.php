@@ -9,6 +9,8 @@ class About extends Model
     protected $table = 'about';
 
     protected $fillable = [
+        'name',
+        'title',
         'email',
         'phone',
         'location',

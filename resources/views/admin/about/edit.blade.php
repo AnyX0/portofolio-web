@@ -17,6 +17,24 @@
         @csrf
         @method('PUT')
 
+        <!-- Identitas Pribadi -->
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Identitas</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm text-slate-300">Nama</label>
+                    <input name="name" type="text" value="{{ old('name', $about->name) }}" class="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none" required>
+                    @error('name')<p class="text-rose-200 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label class="text-sm text-slate-300">Gelar / Title</label>
+                    <input name="title" type="text" value="{{ old('title', $about->title) }}" class="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none" required>
+                    @error('title')<p class="text-rose-200 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+            </div>
+        </div>
+
         <!-- Contact Information -->
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h3 class="text-lg font-semibold text-white mb-4">Contact Information</h3>
@@ -54,11 +72,40 @@
             </div>
         </div>
 
-        <!-- Skills -->
+        <!-- Skills (structured) -->
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Skills</h3>
-            <p class="text-xs text-slate-400 mb-3">Pisahkan dengan koma (contoh: Flutter, Laravel, React)</p>
-            <input name="skills" type="text" value="{{ old('skills', is_array($about->skills) ? implode(', ', $about->skills) : '') }}" class="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none" placeholder="Flutter, Laravel, Tailwind">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold text-white">Skills / Fokus</h3>
+                <button type="button" onclick="addSkillItem()" class="px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-200 text-xs border border-cyan-400/30 hover:bg-cyan-500/30">+ Tambah Skill</button>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">Isi tiga bidang: Jenis (kategori), Judul (headline), Detail (deskripsi singkat).</p>
+
+            <div id="skillsContainer" class="space-y-3">
+                @php
+                    $skillsOld = old('skills');
+                    $skillsData = $skillsOld !== null ? $skillsOld : (is_array($about->skills) ? $about->skills : []);
+                @endphp
+
+                @forelse($skillsData as $index => $skill)
+                    <div class="skill-item rounded-lg border border-white/10 bg-slate-900/50 p-4 space-y-2">
+                        <div class="grid md:grid-cols-3 gap-3">
+                            <input name="skills[{{ $index }}][type]" type="text" value="{{ $skill['type'] ?? '' }}" placeholder="Jenis (mis: Fokus, Stack)" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                            <input name="skills[{{ $index }}][title]" type="text" value="{{ $skill['title'] ?? '' }}" placeholder="Judul" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                            <input name="skills[{{ $index }}][detail]" type="text" value="{{ $skill['detail'] ?? '' }}" placeholder="Detail singkat" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove()" class="text-xs text-rose-400 hover:text-rose-300">Hapus</button>
+                    </div>
+                @empty
+                    <div class="skill-item rounded-lg border border-white/10 bg-slate-900/50 p-4 space-y-2">
+                        <div class="grid md:grid-cols-3 gap-3">
+                            <input name="skills[0][type]" type="text" placeholder="Jenis (mis: Fokus, Stack)" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                            <input name="skills[0][title]" type="text" placeholder="Judul" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                            <input name="skills[0][detail]" type="text" placeholder="Detail singkat" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove()" class="text-xs text-rose-400 hover:text-rose-300">Hapus</button>
+                    </div>
+                @endforelse
+            </div>
             @error('skills')<p class="text-rose-200 text-xs mt-1">{{ $message }}</p>@enderror
         </div>
 
@@ -101,6 +148,7 @@
 
     <script>
         let timelineIndex = {{ old('timeline') ? count(old('timeline')) : ($about->timeline ? count($about->timeline) : 0) }};
+        let skillsIndex = {{ $skillsData ? count($skillsData) : 1 }};
 
         function addTimelineItem() {
             const container = document.getElementById('timelineContainer');
@@ -116,6 +164,22 @@
             `;
             container.appendChild(item);
             timelineIndex++;
+        }
+
+        function addSkillItem() {
+            const container = document.getElementById('skillsContainer');
+            const item = document.createElement('div');
+            item.className = 'skill-item rounded-lg border border-white/10 bg-slate-900/50 p-4 space-y-2';
+            item.innerHTML = `
+                <div class="grid md:grid-cols-3 gap-3">
+                    <input name="skills[${skillsIndex}][type]" type="text" placeholder="Jenis (mis: Fokus, Stack)" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                    <input name="skills[${skillsIndex}][title]" type="text" placeholder="Judul" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                    <input name="skills[${skillsIndex}][detail]" type="text" placeholder="Detail singkat" class="rounded-lg bg-slate-900/70 border border-white/10 px-3 py-2 text-sm">
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-xs text-rose-400 hover:text-rose-300">Hapus</button>
+            `;
+            container.appendChild(item);
+            skillsIndex++;
         }
     </script>
 </x-layouts.app>

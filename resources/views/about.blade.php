@@ -9,33 +9,32 @@
                     <span class="text-xl font-semibold tracking-tight">AU</span>
                 </div>
                 <div>
-                    <h1 class="text-4xl font-semibold text-white leading-tight">Andi Utama</h1>
-                    <p class="text-slate-300">Mobile & Web Engineer</p>
+                    <h1 class="text-4xl font-semibold text-white leading-tight">{{ $name }}</h1>
+                    <p class="text-slate-300">{{ $title }}</p>
                 </div>
             </div>
             <div class="space-y-4 text-slate-200 leading-relaxed">
-                <p class="text-lg">Saya membangun produk dengan pendekatan arsitektur bersih, motion halus, dan pipeline otomatis. Fokus pada performa, kestabilan, serta dokumentasi yang bisa diandalkan tim.</p>
-                <div class="grid sm:grid-cols-3 gap-3 text-sm">
-                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-1">
-                        <p class="text-[11px] uppercase tracking-[0.25em] text-slate-400">Fokus</p>
-                        <p class="text-white font-semibold">Performa & UX</p>
-                        <p class="text-[12px] text-slate-400">Micro-interactions, smooth flow.</p>
+                <p class="text-lg">{{ $bio ?? 'Saya membangun produk dengan pendekatan arsitektur bersih, motion halus, dan pipeline otomatis. Fokus pada performa, kestabilan, serta dokumentasi yang bisa diandalkan tim.' }}</p>
+                @if(!empty($skills))
+                    <div class="grid sm:grid-cols-3 gap-3 text-sm">
+                        @foreach($skills as $skill)
+                            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-1">
+                                <p class="text-[11px] uppercase tracking-[0.25em] text-slate-400">{{ $skill['type'] ?? 'Kategori' }}</p>
+                                <p class="text-white font-semibold">{{ $skill['title'] ?? 'Judul' }}</p>
+                                <p class="text-[12px] text-slate-400">{{ $skill['detail'] ?? '' }}</p>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-1">
-                        <p class="text-[11px] uppercase tracking-[0.25em] text-slate-400">Stack</p>
-                        <p class="text-white font-semibold">Flutter · Laravel</p>
-                        <p class="text-[12px] text-slate-400">Tailwind, TS, REST/WS.</p>
-                    </div>
-                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-1">
-                        <p class="text-[11px] uppercase tracking-[0.25em] text-slate-400">Pipeline</p>
-                        <p class="text-white font-semibold">CI/CD & QA</p>
-                        <p class="text-[12px] text-slate-400">Testing, linting, rollout.</p>
-                    </div>
-                </div>
+                @endif
             </div>
             <div class="flex flex-wrap gap-3">
                 @foreach($skills as $skill)
-                    <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-slate-200 text-sm shadow-sm shadow-cyan-500/10">{{ $skill }}</span>
+                    <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-slate-200 text-sm shadow-sm shadow-cyan-500/10">
+                        {{ $skill['title'] ?? ($skill['type'] ?? '') }}
+                        @if(!empty($skill['detail']))
+                            <span class="text-slate-400">— {{ $skill['detail'] }}</span>
+                        @endif
+                    </span>
                 @endforeach
             </div>
         </div>
@@ -93,10 +92,6 @@
                                 <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-400 to-indigo-500 border-4 border-slate-950 shadow-lg shadow-cyan-500/30 relative z-10 flex items-center justify-center">
                                     <div class="w-2 h-2 rounded-full bg-white"></div>
                                 </div>
-                                <!-- Connecting Line -->
-                                @if($index < count($timeline) - 1)
-                                    <div class="flex-1 w-1 bg-gradient-to-b from-cyan-400/50 to-indigo-500/20"></div>
-                                @endif
                             </div>
 
                             <!-- Content -->

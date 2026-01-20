@@ -11,6 +11,8 @@ class AboutController extends Controller
     public function edit()
     {
         $about = About::firstOrCreate([], [
+            'name' => 'Andi Utama',
+            'title' => 'Mobile & Web Engineer',
             'email' => 'moxer404@aol.com',
             'phone' => '+62 822 6989 8199',
             'location' => 'Padang, Indonesia',
@@ -19,12 +21,34 @@ class AboutController extends Controller
             'skills' => [],
         ]);
 
+        // Pastikan field baru memiliki nilai default agar form tidak kosong
+        if (!$about->name || !$about->title) {
+            $about->fill([
+                'name' => $about->name ?: 'Andi Utama',
+                'title' => $about->title ?: 'Mobile & Web Engineer',
+            ])->save();
+        }
+
+        // Normalisasi skills lama (jika sebelumnya berupa array string)
+        $about->skills = collect($about->skills ?? [])->map(function ($item) {
+            if (is_string($item)) {
+                return [
+                    'type' => 'Skill',
+                    'title' => $item,
+                    'detail' => '',
+                ];
+            }
+            return $item;
+        })->toArray();
+
         return view('admin.about.edit', compact('about'));
     }
 
     public function update(Request $request)
     {
         $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'required|max:50',
             'location' => 'required|max:255',
@@ -34,12 +58,17 @@ class AboutController extends Controller
             'timeline.*.year' => 'nullable|string',
             'timeline.*.title' => 'nullable|string',
             'timeline.*.desc' => 'nullable|string',
-            'skills' => 'nullable|string',
+            'skills' => 'nullable|array',
+            'skills.*.type' => 'nullable|string|max:100',
+            'skills.*.title' => 'nullable|string|max:150',
+            'skills.*.detail' => 'nullable|string|max:255',
         ]);
 
-        // Parse skills from comma-separated string
+        // Filter empty skills entries
         if (isset($data['skills'])) {
-            $data['skills'] = array_map('trim', explode(',', $data['skills']));
+            $data['skills'] = array_values(array_filter($data['skills'], function ($item) {
+                return !empty($item['type']) || !empty($item['title']) || !empty($item['detail']);
+            }));
         }
 
         // Filter empty timeline entries
