@@ -26,7 +26,7 @@ Portfolio website dengan Laravel 12, Cloudinary image storage, dan MySQL.
 
 ## 📦 Quick Start
 
-### Local Development
+### Local Development (Singkat)
 
 ```bash
 # Install dependencies
@@ -53,6 +53,54 @@ php artisan serve
 ```
 
 Visit: http://localhost:8000
+
+### 🖥️ Panduan Localhost (Detail)
+
+1) Prasyarat: PHP 8.3+, Composer, Node 18+, MySQL/PostgreSQL sudah jalan.  
+2) Clone & masuk folder proyek.  
+3) Salin env dan set kunci:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+4) Set di .env untuk lokal:
+   ```env
+   APP_NAME="Portfolio Laravel"
+   APP_ENV=local
+   APP_DEBUG=true
+   APP_URL=http://localhost:8000
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=portfolio_db
+   DB_USERNAME=root
+   DB_PASSWORD=
+   # Opsional Cloudinary (isi jika pakai upload gambar)
+   CLOUDINARY_CLOUD_NAME=xxx
+   CLOUDINARY_API_KEY=xxx
+   CLOUDINARY_API_SECRET=xxx
+   ```
+5) Install dependensi backend & frontend:
+   ```bash
+   composer install
+   npm install
+   ```
+6) Migrasi + storage link:
+   ```bash
+   php artisan migrate
+   php artisan storage:link
+   ```
+7) Jalankan dev server (dua terminal terpisah):
+   ```bash
+   npm run dev      # Vite dev server (hot reload)
+   php artisan serve --host=127.0.0.1 --port=8000
+   ```
+   Akses: http://localhost:8000
+
+8) (Opsional) Build produksi lokal:
+   ```bash
+   npm run build
+   ```
 
 ### Admin Access
 
