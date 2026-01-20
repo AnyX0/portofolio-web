@@ -27,16 +27,6 @@
                     </div>
                 @endif
             </div>
-            <div class="flex flex-wrap gap-3">
-                @foreach($skills as $skill)
-                    <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-slate-200 text-sm shadow-sm shadow-cyan-500/10">
-                        {{ $skill['title'] ?? ($skill['type'] ?? '') }}
-                        @if(!empty($skill['detail']))
-                            <span class="text-slate-400">— {{ $skill['detail'] }}</span>
-                        @endif
-                    </span>
-                @endforeach
-            </div>
         </div>
 
         <div class="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-6 shadow-xl shadow-indigo-500/10 space-y-6">
