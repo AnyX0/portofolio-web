@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700" rel="stylesheet" />
     <style>
+        /* Pakai aset cursor fisik dari public/ */
         * {
             cursor: url('{{ asset('cursor.png') }}') 12 0, auto;
         }

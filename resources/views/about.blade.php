@@ -86,14 +86,6 @@
                 <div class="space-y-0 relative">
                     @foreach($timeline as $index => $item)
                         <div class="relative flex gap-6">
-                            <!-- Timeline Line & Dots -->
-                            <div class="absolute left-4 top-0 bottom-0 flex flex-col items-center">
-                                <!-- Dot -->
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-400 to-indigo-500 border-4 border-slate-950 shadow-lg shadow-cyan-500/30 relative z-10 flex items-center justify-center">
-                                    <div class="w-2 h-2 rounded-full bg-white"></div>
-                                </div>
-                            </div>
-
                             <!-- Content -->
                             <div class="pl-4 pb-8 flex-1">
                                 <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-slate-900/30 p-5 hover:border-cyan-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
