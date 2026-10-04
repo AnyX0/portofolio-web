@@ -182,9 +182,7 @@ project_uas/
 │           ├── edit.blade.php
 │           └── partials/form.blade.php  # Form with AJAX
 ├── routes/web.php
-├── DEPLOYMENT.md                        # 📖 Railway guide
-├── Procfile                             # Railway start
-└── nixpacks.toml                        # Build config
+├── DEPLOYMENT.md                        #                                                      # Build config
 ```
 
 ## 🔑 Environment Variables
@@ -194,15 +192,15 @@ project_uas/
 APP_NAME="Portfolio Laravel"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://your-app.up.railway.app
+APP_URL=https://your-app/
 
-# Database (Railway auto-generates)
+# Database
 DB_CONNECTION=mysql
-DB_HOST=containers-us-west-xxx.railway.app
+DB_HOST=
 DB_PORT=3306
-DB_DATABASE=railway
-DB_USERNAME=root
-DB_PASSWORD=auto-generated
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
 
 # Cloudinary (dari cloudinary.com)
 CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -248,7 +246,6 @@ CLOUDINARY_UPLOAD_PRESET=your_preset
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Railway setup lengkap
 - [Laravel Docs](https://laravel.com/docs)
 - [Cloudinary Docs](https://cloudinary.com/documentation)
-- [Railway Docs](https://docs.railway.app)
 
 ## 🐛 Troubleshooting
 
@@ -302,17 +299,11 @@ tail storage/logs/laravel.log
 4. Push (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
 
-## 📄 License
-
-Open-source - MIT License
-
 ## 👨‍💻 Author
 
 **Andi**
 - Project: Portfolio Laravel
-- Course: Pemrograman Mobile - Semester 5
 - Year: 2025
 
 ---
 
-**🚀 Deploy sekarang!** Baca [DEPLOYMENT.md](DEPLOYMENT.md) untuk guide lengkap Railway + MySQL remote.
