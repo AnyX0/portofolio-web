@@ -243,7 +243,7 @@ CLOUDINARY_UPLOAD_PRESET=your_preset
 
 ## 📚 Documentation
 
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Railway setup lengkap
+- **[DEPLOYMENT.md](DEPLOYMENT.md)**
 - [Laravel Docs](https://laravel.com/docs)
 - [Cloudinary Docs](https://cloudinary.com/documentation)
 
